@@ -17,11 +17,13 @@ import javax.swing.JOptionPane;
  */
 public class RegisterPopup extends javax.swing.JFrame {
 
+    private ServerCMInterface server=null;
     /**
      * Crea un nuovo form RegisterPopup
      */
-    public RegisterPopup() {
+    public RegisterPopup(ServerCMInterface server) {
         initComponents();
+        this.server=server;
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.caricaCentri();
     }

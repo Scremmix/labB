@@ -137,16 +137,18 @@ public class RicercaDati extends javax.swing.JFrame {
     /**
      * Costruttore di default
      */
-    public RicercaDati() {
+    public RicercaDati(ServerCMInterface server) {
         initComponents();
-            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        
+        this.server=server;
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         RicercaDati.this.revalidate();
         RicercaDati.this.repaint();
     }
     private int modalita;
     //1= stato e nome
     //2= coordinate
+    
+    private ServerCMInterface server;
     
     /**
      * Metodo utile a richiamare la modalità di ricerca attualmente attiva
@@ -392,7 +394,7 @@ public class RicercaDati extends javax.swing.JFrame {
     private void mostraRilevazioniButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostraRilevazioniButtonActionPerformed
         // TODO add your handling code here:
         try{
-            DataDisplay showData = new DataDisplay(Long.valueOf(ddtm.getValueAt(dataToDisplayTable.getSelectedRow(), 2).toString()));
+            DataDisplay showData = new DataDisplay(Long.valueOf(ddtm.getValueAt(dataToDisplayTable.getSelectedRow(), 2).toString()),this.server);
             showData.setVisible(true);
             showData.impostaLocalita(
                 ddtm.getValueAt(dataToDisplayTable.getSelectedRow(), 0).toString()

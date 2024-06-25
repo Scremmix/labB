@@ -13,11 +13,14 @@ import javax.swing.JOptionPane;
  */
 public class LoginPopup extends javax.swing.JFrame {
 
+    private ServerCMInterface server=null;
+    
     /**
      * Crea un nuovo LoginPopup
      */
-    public LoginPopup() {
+    public LoginPopup(ServerCMInterface server) {
         initComponents();
+        this.server=server;
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 

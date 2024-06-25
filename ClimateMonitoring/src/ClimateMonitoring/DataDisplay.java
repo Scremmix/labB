@@ -200,8 +200,9 @@ public class DataDisplay extends javax.swing.JFrame {
      * Costruttore con parametro
      * @param idArea id relativo alla zona di interesse di cui mostrare i dati
      */
-    public DataDisplay(Long idArea) {
+    public DataDisplay(Long idArea, ServerCMInterface server) {
         initComponents();
+        this.server = server;
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.idArea=idArea;
         for(javax.swing.table.DefaultTableModel ddtm : tableModArray)
@@ -216,6 +217,8 @@ public class DataDisplay extends javax.swing.JFrame {
         popolaTabelle();
         popolaStatistiche();
     }
+    
+    private ServerCMInterface server=null;
 
     /**
      * This method is called from within the constructor to initialize the form.

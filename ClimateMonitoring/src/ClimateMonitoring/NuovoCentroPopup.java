@@ -22,11 +22,14 @@ import javax.swing.JOptionPane;
  */
 public class NuovoCentroPopup extends javax.swing.JFrame {
 
+    private ServerCMInterface server=null;
+    
     /**
      * Crea un nuovo form NuovoCentroPopup
      */
-    public NuovoCentroPopup() {
+    public NuovoCentroPopup(ServerCMInterface server) {
         initComponents();
+        this.server=server;
         this.caricaPerNomi();
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         localitaAggiungere.setEditable(false);

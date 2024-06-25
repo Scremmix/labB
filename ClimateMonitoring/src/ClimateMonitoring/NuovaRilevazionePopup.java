@@ -21,11 +21,14 @@ import javax.swing.JOptionPane;
  */
 public class NuovaRilevazionePopup extends javax.swing.JFrame {
 
+    private ServerCMInterface server=null;
+    
     /**
      * Crea un nuovo form di RilevazionePopup
      */
-    public NuovaRilevazionePopup() {
+    public NuovaRilevazionePopup(ServerCMInterface server) {
         initComponents();
+        this.server=server;
         ventoX.setText(""+ventoSlider.getValue());
         umiditaX.setText(""+umiditaSlider.getValue());
         pressioneX.setText(""+pressioneSlider.getValue());
