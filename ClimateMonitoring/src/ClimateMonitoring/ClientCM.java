@@ -286,7 +286,9 @@ public class ClientCM extends javax.swing.JFrame {
     private void serverConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverConnectButtonActionPerformed
         // TODO add your handling code here:
         String ipInserito = serverIPField.getText();
-        if(ipValido(ipInserito))
+        if(remoteServerCM != null)
+            JOptionPane.showMessageDialog(rootPane, "L'applicazione è già connessa ad un server. Chiudere l'applicazione e riprovare.");
+        else if(ipInserito.equalsIgnoreCase("localhost") || ipValido(ipInserito))
         {
             connectToRemoteServerCM(ipInserito);
         }
@@ -299,12 +301,13 @@ public class ClientCM extends javax.swing.JFrame {
     private boolean connectToRemoteServerCM(String ip)
     {
         try {
-            Registry r = LocateRegistry.getRegistry(ip);
+            Registry r = LocateRegistry.getRegistry(ip, 3003);
             remoteServerCM = (ServerCMInterface) r.lookup("ServerCM"); 
             JOptionPane.showMessageDialog(rootPane, "Connesso al server "+ip+", pronto.");
             return true;
         } 
         catch (NotBoundException | RemoteException ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(rootPane, "Impossibile connettersi al server all'IP "+ip);
             return false;
         }

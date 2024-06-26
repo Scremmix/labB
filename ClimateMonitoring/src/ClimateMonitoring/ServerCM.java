@@ -16,7 +16,7 @@ import java.util.Scanner;
  */
 public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
 {
-    private DatabaseHelper dbh = null;
+    private static DatabaseHelper dbh = null;
     
     public ServerCM() throws RemoteException
     {
@@ -24,7 +24,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
     // esempio di parametri:
     // localhost/postgres ClimateMonitoring DatabaseCM 
-    public void main(String args[])
+    public static void main(String args[])
     {
         boolean reset = false;
         String [] input = args;
@@ -41,21 +41,20 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
                 
                 System.out.println("ServerCM : Database pronto.");
                 
-                Registry r = LocateRegistry.getRegistry();
+                Registry r = LocateRegistry.createRegistry(3003);
                 r.rebind("ServerCM", new ServerCM());
                 System.out.println("ServerCM : pronto per ricevere richieste.");
                 
-            } catch (RemoteException ex) {
-                System.err.println("ServerCM: impossibile stabilire la connessione.");
-            }
+            } catch (RemoteException ex) {}
         else{
             System.err.println("Sono richiesti i seguenti parametri: ");
             System.err.println("[url del database] [username] [password]");
             System.err.println("Esempio di utilizzo: localhost/postgres ClimateMonitoring DatabaseCM");
+            return;
         }
     }
     
-    private String[] richiediParametri()
+    private static String[] richiediParametri()
     {
         String [] parametri = new String[4];
         for(String e : parametri)
