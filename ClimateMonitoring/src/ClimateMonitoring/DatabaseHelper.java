@@ -50,9 +50,12 @@ public class DatabaseHelper
     {
         try{
             Statement stmt = connection.createStatement();
-            String currentQuery = "DROP TABLE CentroMonitoraggio IF EXISTS;"
-                    + "DROP TABLE CoordinateMonitoraggio IF EXISTS;";
-            stmt.executeUpdate(currentQuery);
+            String currentQuery  = "DROP TABLE CentroMonitoraggio IF EXISTS;"
+                        + "DROP TABLE CoordinateMonitoraggio IF EXISTS"
+                        + "DROP TABLE OperatoriRegistrati IF EXISTS"
+                        + "DROP TABLE ParametriClimatici IF EXISTS"
+                        + "DROP TABLE abbinamentiCentriLocalita IF EXISTS;";
+                stmt.executeUpdate(currentQuery);
             
             
             currentQuery =  "CREATE TABLE CentroMonitoraggio ( "
@@ -97,6 +100,14 @@ public class DatabaseHelper
                     + "noteRegistrazione TEXT, "
                     + "FOREIGN KEY (centroRegistrazione) REFERENCES CentroMonitoraggio(idCentro) ON DELETE CASCADE ON UPDATE CASCADE, "
                     + "FOREIGN KEY (localitaRegistrazone) REFERENCES CoordinateMonitoraggio(idLocalita) ON DELETE CASCADE ON UPDATE CASCADE);";
+            stmt.executeUpdate(currentQuery);
+            
+            currentQuery = "CREATE TABLE abbinamentiCentriLocalita("
+                    + "idAbbinamento SERIAL PRIMARY KEY, "
+                    + "centroAbbinamento INTEGER, "
+                    + "localitaAbbinamento INTEGER, "
+                    + "FOREIGN KEY (centroAbbinamento) REFERENCES CentroMonitoraggio(idCentro) ON DELETE CASCADE ON UPDATE CASCADE, "
+                    + "FOREIGN KEY (localitaAbbinamento) REFERENCES CoordinateMonitoraggio(idLocalita) ON DELETE CASCADE ON UPDATE CASCADE);";
             stmt.executeUpdate(currentQuery);
             
             stmt.close();
