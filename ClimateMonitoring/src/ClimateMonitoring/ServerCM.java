@@ -89,7 +89,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
             ArrayList res = new ArrayList<String>();
             if (rs == null)
             {
-                res.add("noUserFound");
+                return null;
             }
             else if(password.equals(rs.getString(2)))
             {
@@ -98,11 +98,12 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
                 res.add(rs.getString(3));
                 res.add(rs.getString(4));
                 res.add(rs.getString(5));
+                return res;
             }
-            return res;
+            return null;
         } catch (SQLException ex) {
             ex.printStackTrace();
-            return new ArrayList<String>();
+            return null;
         }
     }
 }

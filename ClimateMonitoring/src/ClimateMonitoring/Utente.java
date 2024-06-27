@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -50,7 +48,7 @@ public class Utente {
             ArrayList rigaUtente;
             try {
                 rigaUtente = server.effettuaLogin(idUtente, password);
-                if(rigaUtente!=null){
+                if(rigaUtente != null){
                     Utente.nomeUtente=idUtente;
                     Utente.password=password;
                     Utente.nome=rigaUtente.get(2).toString();
