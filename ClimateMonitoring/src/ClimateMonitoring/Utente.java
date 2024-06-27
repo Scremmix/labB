@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -110,7 +112,8 @@ public class Utente {
      * registrazione
      * @throws utenteException eventuali errori in fase di registrazione
      */
-    public static boolean register(String nome, String cognome, String password1, String password2, String email, String userID, String codiceFiscale, String idCentro) 
+    public static boolean register(ServerCMInterface server, String nome, String cognome, String password1, String password2, 
+            String email, String userID, String codiceFiscale, String idCentro) 
             throws utenteException
     {
         if(!password1.equals(password2))
@@ -124,26 +127,17 @@ public class Utente {
         if(codiceFiscale.length()!=16)
             throw new utenteException("Il codice fiscale non è valido.");
         
-        if(Utente.verificaIdoneita(userID, codiceFiscale, email))
-        {
-        //inserire i file nel formato:
-        //nome#cognome#codiceFiscale#email#userID#password#centroID
-        try (FileWriter writer = new FileWriter("data/OperatoriRegistrati.csv",true)) {
-            writer.write(
-                    "\n"+nome+"#"+cognome+"#"+codiceFiscale+"#"+email+"#"+userID+"#"+password1+"#"+idCentro
-                );
-            writer.close();
-            return true;
+        try {
+            return server.registraUtente(nome, cognome, codiceFiscale, email, userID, password1, idCentro);
+        } catch (RemoteException ex) {
+            throw new utenteException(ex.getLocalizedMessage());
         }
-        catch(IOException e){
-            throw new utenteException("Impossibile trovare il file contenente gli utenti.");
-        }
-        }
-        else return false;
     }
     
     /**
+     * @deprecated 
      * Metodo utile a verificare se alcuni parametri della registrazione
+     * DEPRECATO n quanto gli errori di idoneità vengono gestiti a livello server
      * sono in uso da un utente già registrato
      * @param idUtente del nuovo utente
      * @param codiceFiscale del nuovo utente
@@ -153,6 +147,7 @@ public class Utente {
      * @throws utenteException eventuali errori specifici per le 
      * incongruenze dei parametri (es email già in uso) o di lettura file
      */
+    @Deprecated
     public static boolean verificaIdoneita(String idUtente, String codiceFiscale, String email) 
             throws utenteException
     {

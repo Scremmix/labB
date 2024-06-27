@@ -6,6 +6,8 @@ import java.rmi.registry.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -106,5 +108,40 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
             ex.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public boolean registraUtente(String nome, String cognome, String codiceFiscale, 
+            String email, String idUtente, String password, String idCentro) throws RemoteException {
+        try {
+            return dbh.inserisciNuovoUtente(nome, cognome, codiceFiscale, email, idUtente, password, idCentro);
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+    }
+    
+    @Override
+    public ArrayList<String[]> cercaCentri (String criterio) throws RemoteException
+    {
+        ArrayList result = new ArrayList<String>();
+        try {
+            ResultSet r = dbh.cercaCentri(criterio);
+            if(r != null)
+            {
+                while (r.next()){
+                    String temp[] = new String[6];
+                    temp[0] = Integer.toString(r.getInt(1));
+                    temp[1] = r.getString(2);
+                    temp[2] = r.getString(3);
+                    temp[3] = Integer.toString(r.getInt(4));
+                    temp[4] = r.getString(5);
+                    temp[5] = r.getString(6);
+                    result.add(temp);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+        return result;
     }
 }

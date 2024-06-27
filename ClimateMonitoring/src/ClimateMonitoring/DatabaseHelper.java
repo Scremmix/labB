@@ -62,6 +62,44 @@ public class DatabaseHelper
         }
     }
     
+    public synchronized ResultSet cercaCentri(String criterio) throws SQLException
+    {
+        PreparedStatement stmt = null;
+        String query = "SELECT * FROM centroMonitoraggio WHERE LOWER(nomeCentro) LIKE '%" + criterio.toLowerCase() + "%';";
+        stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        return rs;
+    }
+    
+    public synchronized boolean inserisciNuovoUtente(String nome, String cognome, String codiceFiscale, 
+            String email, String idUtente, String password, String idCentro) throws SQLException
+    {
+        
+        PreparedStatement pStmt = connection.prepareStatement("SELECT * FROM OperatoriRegistrati WHERE LOWER(cfOperatore) = '"+codiceFiscale.toLowerCase()+"';");
+        if( pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Esiste già un operatore con lo stesso codice fiscale");
+        
+        pStmt = connection.prepareStatement("SELECT * FROM OperatoriRegistrati WHERE codiceOperatore = "+ Integer.valueOf(idUtente) +";");
+        if( pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Esiste già un operatore con lo stesso ID");
+        
+        pStmt = connection.prepareStatement("SELECT * FROM OperatoriRegistrati WHERE LOWER(mailOperatore) = '"+ email.toLowerCase() +"';");
+        if( pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Email già in uso da un operatore");
+                
+        pStmt = connection.prepareStatement("INSERT INTO OperatoriRegistrati "
+                    + "(nomeOperatore, cognomeOperatore, cfOperatore, mailOperatore, codiceOperatore, passwordOperatore, centroOperatore) "
+                    + "VALUES(?,?,?,?,?,?,?)");
+      
+        pStmt.setString(1, nome);
+        pStmt.setString(2, cognome);
+        pStmt.setString(3, codiceFiscale);
+        pStmt.setString(4, email);
+        pStmt.setInt(5, Integer.parseInt(idUtente));
+        pStmt.setString(6, password);
+        pStmt.setInt(7, Integer.parseInt(idCentro));
+        pStmt.executeUpdate();
+        return true;
+    }
+    
     public synchronized boolean databaseInit()
     {
         System.out.println("Reinizializzazione del database in corso...");

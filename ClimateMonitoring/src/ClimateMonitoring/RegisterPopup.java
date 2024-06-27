@@ -6,6 +6,7 @@ package ClimateMonitoring;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import static java.lang.Math.min;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
@@ -25,10 +26,9 @@ public class RegisterPopup extends javax.swing.JFrame {
         initComponents();
         this.server=server;
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.caricaCentri();
     }
 
-    private ArrayList<String[]> centriFile=new ArrayList<>();
+    private ArrayList<String[]> currentRicerca = new ArrayList<>();
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -293,14 +293,13 @@ public class RegisterPopup extends javax.swing.JFrame {
      */
     public ArrayList<String[]> cercaCentro(String nomeCentro)
     {
-        ArrayList<String[]> risultati= new ArrayList<>();
-        for(String[] riga: centriFile)
-        {
-            if(riga[1].substring(0, min(riga[1].length(),nomeCentro.length()))
-                    .compareToIgnoreCase(nomeCentro)==0)
-                risultati.add(riga);
+        currentRicerca = new ArrayList<>();
+        try {
+            currentRicerca = server.cercaCentri(nomeCentro);
+        } catch (RemoteException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Errore critico: "+ex.getLocalizedMessage());
         }
-        return risultati;
+        return currentRicerca;
     }
     
     /**
@@ -310,28 +309,30 @@ public class RegisterPopup extends javax.swing.JFrame {
      */
     public String trovaIDCentro(String nomeCentro)
     {
-        for(String[] riga: centriFile)
+        for(String[] riga: currentRicerca)
         {
-            if(riga[1].substring(0, min(riga[1].length(),nomeCentro.length()))
-                    .compareToIgnoreCase(nomeCentro)==0)
+            if(riga[1].contains(nomeCentro))
                 return riga[0];
         }
         return null;
     }
     
     /**
+     * @deprecated
+     * DEPRECATO in seguito alla realizzazione del database, in quanto legge dati da file
      * Carica il file contenente i centri di monitoraggio
      */
+    @Deprecated
     public void caricaCentri()
     {
-        centriFile=new ArrayList<>();
+        currentRicerca=new ArrayList<>();
         try {
                 FileReader read = new FileReader("data/CentroMonitoraggio.csv");
                 Scanner input = new Scanner(read);
                 while(input.hasNextLine()) {
                     String line = input.nextLine();
                     String[] parts = line.split("#");
-                    if (parts.length>1)centriFile.add(parts);
+                    if (parts.length>1)currentRicerca.add(parts);
                 }
             }
         catch(FileNotFoundException ex){
@@ -376,7 +377,7 @@ public class RegisterPopup extends javax.swing.JFrame {
             {
                 JOptionPane.showMessageDialog(rootPane, "Nessun centro selezionato"); 
             }
-            else if(Utente.register(
+            else if(Utente.register(server,
                     nome.getText(),
                     cognome.getText(),
                     new String(pw1.getPassword()),

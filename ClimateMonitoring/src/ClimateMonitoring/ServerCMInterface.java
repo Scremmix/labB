@@ -14,5 +14,9 @@ import java.util.ArrayList;
 public interface ServerCMInterface extends Remote{
     
     public ArrayList<String> effettuaLogin (String idUtente, String password) throws RemoteException;
+    public boolean registraUtente (String nome, String cognome, String codiceFiscale, 
+            String email, String idUtente, String password, String idCentro) throws RemoteException;
+    
+    public ArrayList<String[]> cercaCentri (String criterio) throws RemoteException;
     
 }
