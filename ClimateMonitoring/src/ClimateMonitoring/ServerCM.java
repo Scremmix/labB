@@ -51,7 +51,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         else{
             System.err.println("Sono richiesti i seguenti parametri: ");
             System.err.println("[url del database] [username] [password]");
-            System.err.println("Esempio di utilizzo: localhost/postgres ClimateMonitoring DatabaseCM");
+            System.err.println("Esempio di utilizzo: localhost/postgres admin password123");
         }
     }
     

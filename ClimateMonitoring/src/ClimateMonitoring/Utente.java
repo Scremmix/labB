@@ -178,6 +178,7 @@ public class Utente {
     /**
      * @deprecated 
      * metodo utile alla ricerca di un utente registrato su file
+     * DEPRECATO in seguito all'implementazione del database, in quanto estrapola dati da file
      * @param idUtente da ricercare
      * @param pw da ricercare
      * @return stabilisce il successo o il fallimento della ricerca
