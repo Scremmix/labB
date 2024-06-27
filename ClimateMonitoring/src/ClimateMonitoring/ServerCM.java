@@ -91,7 +91,8 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
             {
                 return null;
             }
-            else if(password.equals(rs.getString(2)))
+            rs.next();
+            if(password.equals(rs.getString(2)))
             {
                 res.add(rs.getString(1));
                 res.add(rs.getString(2));

@@ -29,19 +29,18 @@ public class DatabaseHelper
         this.password=password;
     }
     
-    public ResultSet getUtente(String idUtente) throws SQLException
+    public synchronized ResultSet getUtente(String idUtente) throws SQLException
     {
         PreparedStatement stmt = null;
-        String query = "SELECT codiceOperatore, passwordOperatore, nomeOperatore, cognomeOperatore, centroOperatore"
-                + "FROM OperatoriRegistrati WHERE codiceOperatore = " + idUtente + ";";
+        String query = "SELECT codiceOperatore, passwordOperatore, nomeOperatore, cognomeOperatore, centroOperatore "
+                + "FROM OperatoriRegistrati WHERE codiceOperatore = '" + idUtente + "';";
         stmt = connection.prepareStatement(query);
         ResultSet rs = stmt.executeQuery();
         if( !rs.isBeforeFirst() ) return null;
-        rs.first();
         return rs;
     }
     
-    public boolean getConnection()
+    public synchronized boolean getConnection()
     {
         try{
             connection = DriverManager.getConnection("jdbc:postgresql://"+url,user,password);
@@ -63,7 +62,7 @@ public class DatabaseHelper
         }
     }
     
-    public boolean databaseInit()
+    public synchronized boolean databaseInit()
     {
         System.out.println("Reinizializzazione del database in corso...");
         try{
@@ -152,7 +151,7 @@ public class DatabaseHelper
         }
     }
     
-    private boolean popolaDatabase()
+    private synchronized boolean popolaDatabase()
     {
         try {
             PreparedStatement pStmt = connection.prepareStatement("INSERT INTO CentroMonitoraggio "
