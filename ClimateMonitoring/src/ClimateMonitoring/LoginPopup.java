@@ -118,7 +118,7 @@ public class LoginPopup extends javax.swing.JFrame {
     private void faiLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_faiLoginActionPerformed
         // TODO add your handling code here:
         try{
-            if(!Utente.login(username.getText(), new String(password.getPassword())))
+            if(!Utente.login(server, username.getText(), new String(password.getPassword())))
                 JOptionPane.showMessageDialog(rootPane, "Combinazione utente password non valida.");
             else
             {

@@ -8,7 +8,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -39,18 +43,23 @@ public class Utente {
      * @return true in caso di successo, false altrimenti
      * @throws utenteException errori in caso di apertura file
      */
-    public static boolean login(String idUtente, String password) throws utenteException
+    public static boolean login(ServerCMInterface server, String idUtente, String password) throws utenteException
     {
         if(!loggato())
         {
-            String[] rigaUtente=Utente.cerca(idUtente, password);
-            if(rigaUtente!=null){
+            ArrayList rigaUtente;
+            try {
+                rigaUtente = server.effettuaLogin(idUtente, password);
+                if(rigaUtente!=null){
                     Utente.nomeUtente=idUtente;
                     Utente.password=password;
-                    Utente.nome=rigaUtente[0];
-                    Utente.cognome=rigaUtente[1];
-                    Utente.idCentro=rigaUtente[6];
+                    Utente.nome=rigaUtente.get(2).toString();
+                    Utente.cognome=rigaUtente.get(3).toString();
+                    Utente.idCentro=rigaUtente.get(4).toString();
                     return true;
+                }
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
             }
             return false;
         }else return true;
@@ -169,6 +178,7 @@ public class Utente {
     }
     
     /**
+     * @deprecated 
      * metodo utile alla ricerca di un utente registrato su file
      * @param idUtente da ricercare
      * @param pw da ricercare
@@ -176,6 +186,7 @@ public class Utente {
      * @throws utenteException errore nella ricerca del file contenente gli 
      * utenti
      */
+    @Deprecated
     public static String[] cerca(String idUtente, String pw)throws utenteException{
         try {
             FileReader read = new FileReader("data/OperatoriRegistrati.csv");

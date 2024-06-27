@@ -5,7 +5,12 @@
 
 package ClimateMonitoring;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Scanner;
 
 /**
  *
@@ -22,6 +27,18 @@ public class DatabaseHelper
         this.url=url;
         this.user=user;
         this.password=password;
+    }
+    
+    public ResultSet getUtente(String idUtente) throws SQLException
+    {
+        PreparedStatement stmt = null;
+        String query = "SELECT codiceOperatore, passwordOperatore, nomeOperatore, cognomeOperatore, centroOperatore"
+                + "FROM OperatoriRegistrati WHERE codiceOperatore = " + idUtente + ";";
+        stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        rs.first();
+        return rs;
     }
     
     public boolean getConnection()
@@ -48,6 +65,7 @@ public class DatabaseHelper
     
     public boolean databaseInit()
     {
+        System.out.println("Reinizializzazione del database in corso...");
         try{
             Statement stmt = connection.createStatement();
             String currentQuery  = "DROP TABLE IF EXISTS OperatoriRegistrati;"
@@ -97,6 +115,7 @@ public class DatabaseHelper
                     + "idRegistrazione SERIAL PRIMARY KEY, "
                     + "centroRegistrazione INTEGER, "
                     + "localitaRegistrazione INTEGER, "
+                    + "dataRegistrazione TEXT, "
                     + "ventoParametro INTEGER, "
                     + "umiditaParametro INTEGER, "
                     + "precatmParametro INTEGER, "
@@ -120,9 +139,166 @@ public class DatabaseHelper
             stmt.executeUpdate(currentQuery);
             stmt.close();
             
+            System.out.println("Database resettato.");
+            System.out.println("Popolazione del database in corso...");
+            popolaDatabase();
+            System.out.println("Database popolato.");
+            
             return true;
         } catch (SQLException ex) {
             System.err.println("Errore imprevisto nella connessione al database");
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    private boolean popolaDatabase()
+    {
+        try {
+            PreparedStatement pStmt = connection.prepareStatement("INSERT INTO CentroMonitoraggio "
+                    + "(idCentro, nomeCentro, indirizzoCentro, capCentro, cittaCentro, statoCentro) "
+                    + "VALUES(?,?,?,?,?,?)");
+            FileReader read = new FileReader("data/CentroMonitoraggio.csv");
+            Scanner input = new Scanner(read);
+            while (input.hasNextLine()) 
+            {
+                String line = input.nextLine();
+                String[] parts = line.split("#");
+                if (parts.length>1)
+                {
+                    pStmt.setInt(1, Integer.parseInt(parts[0]));
+                    pStmt.setString(2, parts[1]);
+                    pStmt.setString(3, parts[2]);
+                    pStmt.setInt(4, Integer.parseInt(parts[3]));
+                    pStmt.setString(5, parts[4]);
+                    pStmt.setString(6, parts[5]);
+
+                    pStmt.executeUpdate();
+                }
+            }
+            input.close();
+            read.close();
+            
+            pStmt = connection.prepareStatement("INSERT INTO CoordinateMonitoraggio "
+                    + "(idLocalita, nomeLocalita, statoLocalita, latitudineLocalita, longitudineLocalita) "
+                    + "VALUES(?,?,?,?,?)");
+            read = new FileReader("data/CoordinateMonitoraggio.csv");
+            input = new Scanner(read);
+            while (input.hasNextLine()) 
+            {
+                String line = input.nextLine();
+                String[] parts = line.split("#");
+                String[] coordinate = parts[5].split(", ");
+                if (parts.length>1)
+                {
+                    pStmt.setInt(1, Integer.parseInt(parts[0]));
+                    pStmt.setString(2, parts[2]);
+                    pStmt.setString(3, parts[4]);
+                    pStmt.setObject(4, Double.valueOf(coordinate[0]),java.sql.Types.NUMERIC);
+                    pStmt.setObject(5, Double.valueOf(coordinate[1]),java.sql.Types.NUMERIC);
+
+                    pStmt.executeUpdate();
+                }
+            }
+            input.close();
+            read.close();
+            
+            pStmt = connection.prepareStatement("INSERT INTO OperatoriRegistrati "
+                    + "(nomeOperatore, cognomeOperatore, cfOperatore, mailOperatore, codiceOperatore, passwordOperatore, centroOperatore) "
+                    + "VALUES(?,?,?,?,?,?,?)");
+            read = new FileReader("data/OperatoriRegistrati.csv");
+            input = new Scanner(read);
+            while (input.hasNextLine()) 
+            {
+                String line = input.nextLine();
+                String[] parts = line.split("#");
+                if (parts.length>1)
+                {
+                    pStmt.setString(1, parts[0]);
+                    pStmt.setString(2, parts[1]);
+                    pStmt.setString(3, parts[2]);
+                    pStmt.setString(4, parts[3]);
+                    pStmt.setInt(5, Integer.parseInt(parts[4]));
+                    pStmt.setString(6, parts[5]);
+                    pStmt.setInt(7, Integer.parseInt(parts[6]));
+
+                    pStmt.executeUpdate();
+                }
+            }
+            input.close();
+            read.close();
+            
+            pStmt = connection.prepareStatement("INSERT INTO ParametriClimatici "
+                    + "(centroRegistrazione, localitaRegistrazione, dataRegistrazione, "
+                    + "ventoParametro, umiditaParametro, precatmParametro, tempParametro, precipParametro, altghiParametro, massaghiParametro, "
+                    + "noteRegistrazione) "
+                    + "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+            read = new FileReader("data/ParametriClimatici.csv");
+            input = new Scanner(read);
+            while (input.hasNextLine()) 
+            {
+                String line = input.nextLine();
+                String[] parts = line.split("#");
+                String[] valori = parts[4].split("@");
+                if (parts.length>1)
+                {
+                    pStmt.setInt(1, Integer.parseInt(parts[0]));
+                    pStmt.setInt(2, Integer.parseInt(parts[1]));
+                    pStmt.setString(3, parts[2] + " " + parts[3]);
+                    
+                    pStmt.setInt(4, Integer.parseInt(valori[0]));
+                    pStmt.setInt(5, Integer.parseInt(valori[1]));
+                    pStmt.setInt(6, Integer.parseInt(valori[2]));
+                    pStmt.setInt(7, Integer.parseInt(valori[3]));
+                    pStmt.setInt(8, Integer.parseInt(valori[4]));
+                    pStmt.setInt(9, Integer.parseInt(valori[5]));
+                    pStmt.setInt(10, Integer.parseInt(valori[6]));
+                    
+                    if(parts[5].equals(""))
+                        pStmt.setNull(11, java.sql.Types.BLOB);
+                    else
+                        pStmt.setString(11, parts[5]);
+
+                    pStmt.executeUpdate();
+                }
+            }
+            input.close();
+            read.close();
+            
+            pStmt = connection.prepareStatement("INSERT INTO abbinamentiCentriLocalita "
+                    + "(centroAbbinamento, localitaAbbinamento) "
+                    + "VALUES(?,?)");
+            read = new FileReader("data/CentroMonitoraggio.csv");
+            input = new Scanner(read);
+            while (input.hasNextLine()) 
+            {
+                String line = input.nextLine();
+                String[] parts = line.split("#");
+                String[] listaLocalita = parts[6].split("@");
+                if (parts.length>1)
+                {
+                    for(String localita : listaLocalita)
+                    {
+                        pStmt.setInt(1, Integer.parseInt(parts[0]));
+                        pStmt.setInt(2, Integer.parseInt(localita));
+                        pStmt.executeUpdate();
+                    }
+                }
+            }
+            input.close();
+            read.close();
+            
+            pStmt.close();
+            return true;
+        } catch (SQLException ex) {
+            System.err.println("Errore imprevisto nella connessione al database");
+            ex.printStackTrace();
+            return false;
+        } catch (FileNotFoundException ex) {
+            System.err.println("File csv non trovato.");
+            ex.printStackTrace();
+            return false;
+        } catch (IOException ex) {
             ex.printStackTrace();
             return false;
         }

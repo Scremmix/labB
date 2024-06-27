@@ -4,6 +4,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.rmi.registry.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -45,12 +46,12 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
                 r.rebind("ServerCM", new ServerCM());
                 System.out.println("ServerCM : pronto per ricevere richieste.");
                 
-            } catch (RemoteException ex) {}
+            } catch (RemoteException ex) 
+            {ex.printStackTrace();}
         else{
             System.err.println("Sono richiesti i seguenti parametri: ");
             System.err.println("[url del database] [username] [password]");
             System.err.println("Esempio di utilizzo: localhost/postgres ClimateMonitoring DatabaseCM");
-            return;
         }
     }
     
@@ -78,5 +79,30 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         parametri[3] = keyboard.nextLine();
         
         return parametri;
+    }
+
+    @Override
+    public ArrayList<String> effettuaLogin(String idUtente, String password) throws RemoteException{
+        ResultSet rs;
+        try {
+            rs = dbh.getUtente(idUtente);
+            ArrayList res = new ArrayList<String>();
+            if (rs == null)
+            {
+                res.add("noUserFound");
+            }
+            else if(password.equals(rs.getString(2)))
+            {
+                res.add(rs.getString(1));
+                res.add(rs.getString(2));
+                res.add(rs.getString(3));
+                res.add(rs.getString(4));
+                res.add(rs.getString(5));
+            }
+            return res;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return new ArrayList<String>();
+        }
     }
 }
