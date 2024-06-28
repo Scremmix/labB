@@ -348,7 +348,7 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
                 listaIdToSend.add(id.toString());
             
             try {
-                if(server.salvaCentrto(idBox.getText(), nomeCentroBox.getText(),
+                if(server.salvaCentro(idBox.getText(), nomeCentroBox.getText(),
                         indirizzoBox.getText(), capBox.getText(),
                         comuneBox.getText()+", "+provinciaBox.getText(), statoBox.getText(),
                         listaIdToSend))

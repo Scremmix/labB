@@ -29,12 +29,11 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     // localhost/postgres ClimateMonitoring DatabaseCM 
     
     /**
-     * qui può avvenire un possibile reset che serve per riinizializzare il server
-     * questo avviene solamente se viene passata una y in input.
+     * qui può avvenire un possibile reset che serve per reinizializzare il server
+     * questo avviene solamente se viene passata una "y" in input a tale richiesta.
      * qui viene inoltre creato un registro sulla porta 3003 su cui viene fatto bind e rebind 
-     * del server e dico a video che è pronto a ricevere richieste, se c'è un errore 
-     * faccio printstack.
-     * @param args
+     * del server e esplicitato a video lo stato del server e del database
+     * @param args [0]:databaseurl | [1]: databaseusername | [2]: password | [3]: "y" per reset database se desiderato
      */
     public static void main(String args[])
     {
@@ -67,8 +66,8 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
     
     /**
-     * Riceve in input gli argomenti
-     * @return
+     * Richiede i parametri all'amministtraore che inizializza il server
+     * @return parametri inseriti
      */
     private static String[] richiediParametri()
     {
@@ -97,10 +96,10 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
 
     /**
-     * metodo utile ad effettuare il processo di login
+     * Metodo utile ad effettuare una richiesta di login da parte di un operatore
      * @param idUtente id dell'utente che desidera di effettuare il login
      * @param password password dell'utente di cui viene controllata l'esistenza
-     * @return
+     * @return dati relativi all'utente richiesto qualora esista, null altrimenti
      * @throws RemoteException
      */
     @Override
@@ -165,10 +164,10 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
     
     /**
-     * 
-     * @param criterio 
-     * @return
-     * @throws RemoteException
+     * Viene effettuata una ricerca su database per il centro
+     * @param criterio testo che deve essere contenuto nel nome del centro da cercare
+     * @return lista dei centri corrispondenti al criterio (arraylist vuota in assenza di riscontri)
+     * @throws RemoteException eventuali errori da database o criteri non rispettati
      */
     @Override
     public ArrayList<String[]> cercaCentri (String criterio) throws RemoteException
@@ -197,7 +196,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
     
     @Override
-    public boolean salvaCentrto(String idCentro, String nomeCentro, String indirizzoCentro, 
+    public boolean salvaCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
             String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws RemoteException
     {
         try {

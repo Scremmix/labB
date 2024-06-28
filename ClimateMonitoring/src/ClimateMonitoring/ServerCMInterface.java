@@ -19,7 +19,7 @@ public interface ServerCMInterface extends Remote{
     public boolean cambiaCentroUtente(String idUtente, String idCentro) throws RemoteException;
     
     public ArrayList<String[]> cercaCentri (String criterio) throws RemoteException;
-    public boolean salvaCentrto(String idCentro, String nomeCentro, String indirizzoCentro, 
+    public boolean salvaCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
             String capCentro, String cittCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws RemoteException;
     
     public ArrayList<String[]> cercaLocalita (String criterioNome, String criterioStato) throws RemoteException;
