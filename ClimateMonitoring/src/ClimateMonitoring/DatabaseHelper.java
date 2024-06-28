@@ -16,7 +16,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Ottengo la connesione a postgres e stampo se sono riuscito a connettermi o no.
+ * per l'inizializzazione del database vengono scritte tutte le query e vengono create,
+ * dopo viene popolato il database, che legge da file i contenuti e li traduce 
+ * nei risultati di ogni tabella.
+ * 
  * @author alesc
  */
 public class DatabaseHelper 
@@ -94,6 +98,20 @@ public class DatabaseHelper
         return true;
     }
     
+    /**
+     * l'inserimento di un nuovo c'entro subisce fondamentali controlli che hanno la funzione
+     * di abbinare i centri di registrazione con i luoghi in cui si possono svolgere le 
+     * registrazioni in questione. viene ritornato vero se l'operazione è andata a buon fine
+     * @param idCentro
+     * @param nomeCentro
+     * @param indirizzoCentro
+     * @param capCentro
+     * @param cittaCentro
+     * @param statoCentro
+     * @param localitaAbbinate
+     * @return
+     * @throws SQLException
+     */
     public synchronized boolean inserisciNuovoCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
             String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws SQLException
     {
@@ -158,6 +176,10 @@ public class DatabaseHelper
         return true;
     }
     
+    /**
+     * connessione al database sql con stampa di un messaggio di avvenuta connessione
+     * @return
+     */
     public synchronized boolean getConnection()
     {
         try{
@@ -180,6 +202,10 @@ public class DatabaseHelper
         }
     }
     
+    /**
+     * qui viene reinizzializzato il database e sostituito con le componenti di interesse
+     * @return
+     */
     public synchronized boolean databaseInit()
     {
         System.out.println("Reinizializzazione del database in corso...");
@@ -269,6 +295,10 @@ public class DatabaseHelper
         }
     }
     
+    /**
+     * popolazione del database tramite inserimento dei dati forniti
+     * @return
+     */
     private synchronized boolean popolaDatabase()
     {
         try {

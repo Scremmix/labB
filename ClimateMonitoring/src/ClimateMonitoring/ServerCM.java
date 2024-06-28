@@ -27,6 +27,15 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     }
     // esempio di parametri:
     // localhost/postgres ClimateMonitoring DatabaseCM 
+    
+    /**
+     * qui può avvenire un possibile reset che serve per riinizializzare il server
+     * questo avviene solamente se viene passata una y in input.
+     * qui viene inoltre creato un registro sulla porta 3003 su cui viene fatto bind e rebind 
+     * del server e dico a video che è pronto a ricevere richieste, se c'è un errore 
+     * faccio printstack.
+     * @param args
+     */
     public static void main(String args[])
     {
         boolean reset = false;
@@ -57,6 +66,10 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    /**
+     * Riceve in input gli argomenti
+     * @return
+     */
     private static String[] richiediParametri()
     {
         String [] parametri = new String[4];
@@ -83,6 +96,13 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return parametri;
     }
 
+    /**
+     * metodo utile ad effettuare il processo di login
+     * @param idUtente id dell'utente che desidera di effettuare il login
+     * @param password password dell'utente di cui viene controllata l'esistenza
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String> effettuaLogin(String idUtente, String password) throws RemoteException{
         ResultSet rs;
@@ -112,6 +132,18 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
 
+    /**
+     * Viene inserito un nuovo utente nel database sulla base dei seguenti dati:
+     * @param nome
+     * @param cognome
+     * @param codiceFiscale
+     * @param email
+     * @param idUtente
+     * @param password
+     * @param idCentro
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean registraUtente(String nome, String cognome, String codiceFiscale, 
             String email, String idUtente, String password, String idCentro) throws RemoteException {
@@ -132,6 +164,12 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    /**
+     * 
+     * @param criterio 
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String[]> cercaCentri (String criterio) throws RemoteException
     {
