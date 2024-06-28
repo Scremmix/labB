@@ -10,7 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,26 +43,29 @@ public class DatabaseHelper
         return rs;
     }
     
-    public synchronized boolean getConnection()
+    public synchronized ResultSet cercaLocalita(String nome, String stato) throws SQLException
     {
-        try{
-            connection = DriverManager.getConnection("jdbc:postgresql://"+url,user,password);
-            if(connection!=null)
-            {
-                System.out.println("Connessione al database PostgreSQL effettuata con successo.");
-                return true;
-            }
-            else
-            {
-                System.err.println("Connessione al database PostgreSQL fallita.");
-                return false;
-            }
-        }
-        catch(SQLException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
+        PreparedStatement stmt = null;
+        String query = "SELECT * FROM coordinateMonitoraggio "
+                + "WHERE LOWER(nomeLocalita) LIKE '%"+nome.toLowerCase()+"%' AND LOWER(statoLocalita) LIKE '%"+stato.toLowerCase()+"%'"
+                + "ORDER BY statoLocalita, nomeLocalita";
+        stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        return rs;
+    }
+    
+    public synchronized ResultSet cercaLocalitaCoordinate(String latitudine, String longitudine) throws SQLException
+    {
+        PreparedStatement stmt = null;
+        String query = "SELECT * FROM coordinateMonitoraggio "
+                + "WHERE latitudineLocalita BETWEEN "+(Double.parseDouble(latitudine)-0.5)+" AND "+(Double.parseDouble(latitudine)+0.5)+" "
+                + "AND longitudineLocalita) BETWEEN "+(Double.parseDouble(longitudine)-0.5)+" AND "+(Double.parseDouble(longitudine)+0.5)+" "
+                + "ORDER BY nomeLocalita";
+        stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        return rs;
     }
     
     public synchronized ResultSet cercaCentri(String criterio) throws SQLException
@@ -70,6 +76,56 @@ public class DatabaseHelper
         ResultSet rs = stmt.executeQuery();
         if( !rs.isBeforeFirst() ) return null;
         return rs;
+    }
+    
+    public synchronized boolean cambiaCentrtoUtente(String idUtente, String idCentro) throws SQLException
+    {
+        PreparedStatement pStmt;
+        pStmt = connection.prepareStatement("SELECT * FROM centroMonitoraggio WHERE idCentro = "+Integer.valueOf(idCentro)+";");
+        if( !pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Non esiste nessun centro con questo codice");
+        
+        pStmt = connection.prepareStatement("SELECT * FROM OperatoriRegistrati WHERE codiceOperatore = "+ Integer.valueOf(idUtente) +";");
+        if( !pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Non esise nessun operatore con questo ID");
+        
+        pStmt = connection.prepareStatement("UPDATE operatoriregistrati SET centroOperatore = "+Integer.valueOf(idCentro)
+                +" WHERE codiceOperatore = "+ Integer.valueOf(idUtente) +";");
+        pStmt.executeUpdate();
+        pStmt.close();
+        return true;
+    }
+    
+    public synchronized boolean inserisciNuovoCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
+            String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws SQLException
+    {
+        PreparedStatement pStmt = connection.prepareStatement("SELECT * FROM centroMonitoraggio WHERE idCentro = "+Integer.valueOf(idCentro)+";");
+        if( pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Esiste già un centro con lo stesso codice");
+                
+        pStmt = connection.prepareStatement("INSERT INTO centroMonitoraggio "
+                    + "(idCentro, nomeCentro, indirizzoCentro, capCentro, cittaCentro, statoCentro) "
+                    + "VALUES(?,?,?,?,?,?)");
+        
+        pStmt.setInt(1, Integer.parseInt(idCentro));
+        pStmt.setString(2, nomeCentro);
+        pStmt.setString(3, indirizzoCentro);
+        pStmt.setInt(4, Integer.parseInt(capCentro));
+        pStmt.setString(5, cittaCentro);
+        pStmt.setString(6, statoCentro);
+        
+        pStmt.executeUpdate();
+        
+        for(String idLocalita : localitaAbbinate)
+        {
+            pStmt = connection.prepareStatement("INSERT INTO abbinamentiCentriLocalita "
+                    + "(centroAbbinamento, localitaAbbinamento) "
+                    + "VALUES(?,?)");
+        
+            pStmt.setInt(1, Integer.parseInt(idCentro));
+            pStmt.setInt(2, Integer.parseInt(idLocalita));
+        
+            pStmt.executeUpdate();
+        }
+        pStmt.close();
+        return true;
     }
     
     public synchronized boolean inserisciNuovoUtente(String nome, String cognome, String codiceFiscale, 
@@ -97,7 +153,31 @@ public class DatabaseHelper
         pStmt.setString(6, password);
         pStmt.setInt(7, Integer.parseInt(idCentro));
         pStmt.executeUpdate();
+        pStmt.close();
+        
         return true;
+    }
+    
+    public synchronized boolean getConnection()
+    {
+        try{
+            connection = DriverManager.getConnection("jdbc:postgresql://"+url,user,password);
+            if(connection!=null)
+            {
+                System.out.println("Connessione al database PostgreSQL effettuata con successo.");
+                return true;
+            }
+            else
+            {
+                System.err.println("Connessione al database PostgreSQL fallita.");
+                return false;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public synchronized boolean databaseInit()

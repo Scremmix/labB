@@ -101,8 +101,10 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
                 res.add(rs.getString(3));
                 res.add(rs.getString(4));
                 res.add(rs.getString(5));
+                rs.close();
                 return res;
             }
+            rs.close();
             return null;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -115,6 +117,16 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
             String email, String idUtente, String password, String idCentro) throws RemoteException {
         try {
             return dbh.inserisciNuovoUtente(nome, cognome, codiceFiscale, email, idUtente, password, idCentro);
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+    }
+    
+    @Override
+    public boolean cambiaCentroUtente(String idUtente, String idCentro) throws RemoteException
+    {
+        try {
+            return dbh.cambiaCentrtoUtente(idUtente, idCentro);
         } catch (SQLException ex) {
             throw new RemoteException(ex.getLocalizedMessage());
         }
@@ -138,10 +150,72 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
                     temp[5] = r.getString(6);
                     result.add(temp);
                 }
+                r.close();
             }
         } catch (SQLException ex) {
             throw new RemoteException(ex.getLocalizedMessage());
         }
         return result;
     }
+    
+    @Override
+    public boolean salvaCentrto(String idCentro, String nomeCentro, String indirizzoCentro, 
+            String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws RemoteException
+    {
+        try {
+            return dbh.inserisciNuovoCentro(idCentro, nomeCentro, indirizzoCentro, capCentro, cittaCentro, statoCentro, localitaAbbinate);
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+    }
+    
+    @Override
+    public ArrayList<String[]> cercaLocalita (String criterioNome, String criterioStato) throws RemoteException
+    {
+        ArrayList result = new ArrayList<String[]>();
+        try {
+            ResultSet r = dbh.cercaLocalita(criterioNome, criterioStato);
+            while (r.next())
+            {
+                String[] content = new String[5];
+                
+                content[0] = Integer.toString(r.getInt(1));
+                content[1] = r.getString(2);
+                content[2] = r.getString(3);
+                content[3] = Double.toString(r.getDouble(4));
+                content[4] = Double.toString(r.getDouble(5));
+                        
+                result.add(content);
+            }
+            r.close();
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+        return result;
+    }
+    
+    @Override
+    public ArrayList<String[]> cercaLocalitaCoordinate (String latitudine, String logitudine) throws RemoteException
+    {
+        ArrayList result = new ArrayList<String[]>();
+        try {
+            ResultSet r = dbh.cercaLocalitaCoordinate(latitudine, logitudine);
+            while (r.next())
+            {
+                String[] content = new String[5];
+                
+                content[0] = Integer.toString(r.getInt(1));
+                content[1] = r.getString(2);
+                content[2] = r.getString(3);
+                content[3] = Double.toString(r.getDouble(4));
+                content[4] = Double.toString(r.getDouble(5));
+                        
+                result.add(content);
+            }
+            r.close();
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+        return result;
+    } 
 }

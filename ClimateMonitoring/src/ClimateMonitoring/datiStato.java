@@ -8,12 +8,14 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 
 /**
+ * @deprecated 
  * Classe riguardante i dati dello Stato, ossia le righe del 
  * file contenente le località accomunate dallo stesso Stato
  * @author Riva Samuele
  * @author Scremin Alessandro
  * @author Zucchi Luca
  */
+@Deprecated
 public class datiStato 
 {
     private String nomeStato="";

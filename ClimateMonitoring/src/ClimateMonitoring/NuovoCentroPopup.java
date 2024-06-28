@@ -4,15 +4,8 @@
  */
 package ClimateMonitoring;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.StringJoiner;
 import javax.swing.JOptionPane;
 
 /**
@@ -30,7 +23,6 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
     public NuovoCentroPopup(ServerCMInterface server) {
         initComponents();
         this.server=server;
-        this.caricaPerNomi();
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         localitaAggiungere.setEditable(false);
     }
@@ -318,17 +310,12 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Il campo per il nome dello stato è vuoto."); 
         }
         else{
-                    datiStato statoDiRicerca=cercaStato(statoCerca.getText());
-                    if(statoDiRicerca==null)
-                        JOptionPane.showMessageDialog(rootPane, "Stato non trovato");
-                    else
-                    {
-                        ArrayList<String[]> elencoLocalita=statoDiRicerca.cerca(localitaCerca.getText());
-                        if(elencoLocalita==null)
-                            JOptionPane.showMessageDialog(rootPane, "Combinazione località-Stato non trovata.");
-                        else
-                            mostraInTabella(elencoLocalita);
-                    }
+            try {
+                datiLocalita = server.cercaLocalita(localitaCerca.getText(), statoCerca.getText());
+                mostraInTabella(datiLocalita);
+            } catch (RemoteException ex) {
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage()); 
+            }
         }
     }//GEN-LAST:event_cercaLocalitaButtonActionPerformed
     
@@ -353,77 +340,32 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Campo della provincia invalido");
         else if(statoBox.getText().isBlank() || statoBox.getText().isEmpty())
             JOptionPane.showMessageDialog(rootPane, "Campo dello stato vuoto");
-        else if(cercaStato(statoBox.getText())==null)
-            JOptionPane.showMessageDialog(rootPane, "Stato non trovato");
         else if(idDaAbbinare.isEmpty())
             JOptionPane.showMessageDialog(rootPane, "Nessuna località selezionata");  
         else{
-            boolean continua=true;
+            ArrayList listaIdToSend = new ArrayList<String>();
+            for(Long id : idDaAbbinare)
+                listaIdToSend.add(id.toString());
+            
             try {
-                FileReader read = new FileReader("data/CentroMonitoraggio.csv");
-                Scanner input = new Scanner(read);
-                while(input.hasNextLine()&&continua) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    if(parts[0].equals(idBox.getText()))
-                        continua=false;
-                }
-            }
-            catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il file contenente i centri di monitoraggio.");
-            }
-            if(continua)
-            {
-                String idString=idDaAbbinare.toString().replace(", ", "@").replace("[", "").replace("]", "");
-                try(FileWriter writer = new FileWriter("data/CentroMonitoraggio.csv",true)) {
-                    writer.write(
-                        "\n"+idBox.getText()+"#"+
-                        nomeCentroBox.getText()+"#"+
-                        indirizzoBox.getText()+"#"+
-                        capBox.getText()+"#"+
-                        comuneBox.getText()+", "+
-                        provinciaBox.getText()+"#"+
-                        statoBox.getText()+"#"+
-                        idString
-                    );
-                writer.close();
-                JOptionPane.showMessageDialog(rootPane, "Centro creato con successo.");
+                if(server.salvaCentrto(idBox.getText(), nomeCentroBox.getText(),
+                        indirizzoBox.getText(), capBox.getText(),
+                        comuneBox.getText()+", "+provinciaBox.getText(), statoBox.getText(),
+                        listaIdToSend))
+                    JOptionPane.showMessageDialog(rootPane, "Centro registrato.");  
                 
                 if(cambiaCentroOp.isSelected())
                 {
-                    try {
-                        BufferedReader opFileIN = new BufferedReader(new FileReader("data/OperatoriRegistrati.csv"));
-                        StringJoiner sjFile= new StringJoiner("/n");
-                        String line;
-
-                        while ((line = opFileIN.readLine()) != null) 
-                        {
-                            String[] tempLine = line.split("#");
-                            if(tempLine[4].equals(Utente.getIDUtente()))
-                            {
-                                tempLine[6]=idBox.getText();
-                                StringJoiner sjRiga= new StringJoiner("#");
-                                for(String part : tempLine) 
-                                    sjRiga.add(part);
-                                line=sjRiga.toString();
-                            }
-                            sjFile.add(line);
-                        }
-                        opFileIN.close();
-                        FileOutputStream opFileOUT = new FileOutputStream("data/OperatoriRegistrati.csv");
-                        opFileOUT.write(sjFile.toString().getBytes());
-                        opFileOUT.close();
-                        JOptionPane.showMessageDialog(rootPane, "Operatore abbinato con successo.");
-                    } catch (FileNotFoundException e) 
-                        {JOptionPane.showMessageDialog(rootPane, "Impossibile trovare il file contenente gli operatori registrati");}
+                    if(server.cambiaCentroUtente(Utente.getIDUtente(), idBox.getText()))
+                    {
+                        Utente.setCentro(idBox.getText());
+                        JOptionPane.showMessageDialog(rootPane, "Utente attualmentte loggatto abbinato al cenro appena creato"); 
+                    }
                 }
                 this.dispose();
+            } catch (RemoteException ex) {
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage()); 
             }
-            catch(IOException e){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile salvare su file");
-            }}
-            else
-                JOptionPane.showMessageDialog(rootPane, "Esiste già un centro con l'ID inserito");
         }
     }//GEN-LAST:event_salvaRilevazioneButtonActionPerformed
 
@@ -470,66 +412,14 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
     public void mostraInTabella(ArrayList<String[]> righe)
     {
         ddtm.setRowCount(0);
-        String[] coordinateTemp;
         for(String[] parti : righe)
         {
-            coordinateTemp=parti[5].split(",");
             ddtm.addRow
-                (new Object[] {parti[2],parti[4],Long.valueOf(parti[0]),Double.valueOf(coordinateTemp[0]),Double.valueOf(coordinateTemp[1])});
+                (new Object[] {parti[1],parti[2],Long.valueOf(parti[0]),Double.valueOf(parti[3]),Double.valueOf(parti[4])});
         }
     }
         
-    public ArrayList<datiStato> mondoNomi=null;
-    
-    /**
-     * Ricerca del nome dello stato nella variabile contenente il file delle localita
-     * @param nomeStato nome dello stato inserito
-     * @return oggetto datiStato corrispondente se esiste, null altrimenti
-     */
-    public datiStato cercaStato(String nomeStato)
-    {
-        if(mondoNomi!=null)
-        {
-            for(datiStato stato: mondoNomi)
-                if(stato.daiNomeStato().equals(nomeStato))
-                    return stato;
-            return null;
-        }
-        else{return null;}
-    }
-    
-    /**
-     * Carica il file contenente le località di monitoraggio
-     */
-    
-    public void caricaPerNomi()
-    {
-        mondoNomi=new ArrayList<>();
-        try {
-                FileReader read = new FileReader("data/CoordinateMonitoraggio.csv");
-                Scanner input = new Scanner(read);
-                datiStato temp=null;
-                while(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    temp=cercaStato(parts[4]);
-                    if(temp==null)
-                    {
-                        temp=new datiStato(parts[4]);
-                        mondoNomi.add(temp);
-                    }
-                    try{
-                        temp.inserireLocalita(parts);
-                    } catch (datiStatoException ex) {
-                        JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile caricare la riga con ID: "+parts[0]+".");
-                    }
-                }
-            }
-        catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il file contenente le stazioni di monitoraggio.");
-        }
-    }
-    
+    public ArrayList<String[]> datiLocalita=null;
     
     
     javax.swing.table.DefaultTableModel ddtm = new javax.swing.table.DefaultTableModel(

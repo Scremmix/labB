@@ -74,6 +74,7 @@ public class Utente {
     public static String getIDUtente()
     {return Utente.nomeUtente;}
     
+    
     /**
      * Metodo utile a ottenere i dati anagrafici dell'operatore attuale
      * @return nome e cognome
@@ -88,6 +89,14 @@ public class Utente {
     public static String getCentro()
     {return Utente.idCentro;}
     
+    /**
+     * Utile a impostare il centro di monitoraggio cui è abbinato l'operatore attuale
+     * Nota: necessita di una chiamata per modificare a DB il valore
+     * 
+     * @param centro: l'ID del nuovo centro
+     */
+    public static void setCentro(String centro)
+    { Utente.idCentro = centro; }
     /**
      * Metodo utile a controllare se un operatore è attualmente connesso o meno
      * @return valore booleano corrispondente
