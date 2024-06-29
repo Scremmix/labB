@@ -132,7 +132,7 @@ public class ServerCMTest {
         ArrayList<String> localitaAbbinate = null;
         ServerCM instance = new ServerCM();
         boolean expResult = false;
-        boolean result = instance.salvaCentrto(idCentro, nomeCentro, indirizzoCentro, capCentro, cittaCentro, statoCentro, localitaAbbinate);
+        boolean result = instance.salvaCentro(idCentro, nomeCentro, indirizzoCentro, capCentro, cittaCentro, statoCentro, localitaAbbinate);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
