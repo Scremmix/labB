@@ -7,6 +7,7 @@ package ClimateMonitoring;
 import java.awt.Component;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -176,22 +177,22 @@ public class DataDisplay extends javax.swing.JFrame {
         if(this.idArea!=null)
         {
             try {
-                FileReader read = new FileReader("data/ParametriClimatici.csv");
-                Scanner input = new Scanner(read);
-                while(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    if (parts[1].equals(this.idArea.toString()))
+                ArrayList<Rilevazione> listaRilevazioni = server.cercaRilevazioneLocalita(idArea.toString());
+                
+                for(Rilevazione ril : listaRilevazioni)
+                {
+                    ArrayList<Integer> valutazioni = ril.getValori();
+                    for(int i =0; i<7; i++)
                     {
-                        String[] valutazioni=parts[4].split("@");
-                        for(int i =0; i<7; i++)
-                            tableModArray[i].addRow
-                                (new Object[] {parts[2],parts[3],valutazioni[i],parts[5]});
+                        tableModArray[i].addRow(
+                                new Object[] {ril.getData(),ril.getOra(),valutazioni.get(i).toString(),ril.getNota()});
                     }
                 }
+                
             }
-            catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane,"Impossibile trovare il file contenente le rilevazioni.");
+            catch (RemoteException ex)
+            {
+                JOptionPane.showMessageDialog(rootPane, ex.getLocalizedMessage());
             }
         }
     }    

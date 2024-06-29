@@ -87,5 +87,12 @@ public class Rilevazione implements Serializable{
     public String getOra() {
         return ora;
     }
-    
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public void setOra(String ora) {
+        this.ora = ora;
+    }
 }

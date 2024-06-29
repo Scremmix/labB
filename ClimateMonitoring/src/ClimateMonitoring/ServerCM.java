@@ -6,8 +6,6 @@ import java.rmi.registry.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -166,6 +164,35 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    @Override
+    public ArrayList<Rilevazione> cercaRilevazioneLocalita (String idLocalita) throws RemoteException
+    {
+        ArrayList result = new ArrayList<Rilevazione>();
+        try {
+            ResultSet r = dbh.getRilevazioniLocalita(idLocalita);
+            if(r != null)
+            while (r.next())
+            {
+                ArrayList valoriTemp = new ArrayList<Integer>();
+                for(int i = 5; i <= 11; i++)
+                {
+                    valoriTemp.add(r.getInt(i));
+                }
+                Rilevazione temp = new Rilevazione(Integer.toString(r.getInt(2)),
+                        Long.valueOf(idLocalita), 
+                        valoriTemp, 
+                        r.getString(12));
+                String[] tempData = r.getString(4).split(" ");
+                temp.setData(tempData[0]);
+                temp.setOra(tempData[1]);
+                result.add(temp);
+            }
+        } catch (SQLException | rilevazioneException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+        return result;
+    }
+    
     /**
      * Viene effettuata una ricerca su database per il centro
      * @param criterio testo che deve essere contenuto nel nome del centro da cercare
@@ -259,6 +286,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return result;
     } 
     
+    @Override
     public ArrayList<String[]> cercaLocalitaAbbinate (String idCentro) throws RemoteException
     {
         ArrayList result = new ArrayList<String[]>();

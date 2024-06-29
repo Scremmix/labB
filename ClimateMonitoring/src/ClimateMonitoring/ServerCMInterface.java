@@ -28,5 +28,5 @@ public interface ServerCMInterface extends Remote{
     public ArrayList<String[]> cercaLocalitaAbbinate (String idCentro) throws RemoteException;
     
     public boolean salvaRilevazione(Rilevazione r) throws RemoteException;
-    
+    public ArrayList<Rilevazione> cercaRilevazioneLocalita (String idLocalita) throws RemoteException;
 }

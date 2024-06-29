@@ -5,15 +5,12 @@
 
 package ClimateMonitoring;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Ottengo la connesione a postgres e stampo se sono riuscito a connettermi o no.
@@ -64,7 +61,7 @@ public class DatabaseHelper
         PreparedStatement stmt = null;
         String query = "SELECT * FROM coordinateMonitoraggio "
                 + "WHERE latitudineLocalita BETWEEN "+(Double.parseDouble(latitudine)-0.5)+" AND "+(Double.parseDouble(latitudine)+0.5)+" "
-                + "AND longitudineLocalita) BETWEEN "+(Double.parseDouble(longitudine)-0.5)+" AND "+(Double.parseDouble(longitudine)+0.5)+" "
+                + "AND longitudineLocalita BETWEEN "+(Double.parseDouble(longitudine)-0.5)+" AND "+(Double.parseDouble(longitudine)+0.5)+" "
                 + "ORDER BY nomeLocalita";
         stmt = connection.prepareStatement(query);
         ResultSet rs = stmt.executeQuery();
@@ -96,6 +93,18 @@ public class DatabaseHelper
         pStmt.executeUpdate();
         pStmt.close();
         return true;
+    }
+    
+    public synchronized ResultSet getRilevazioniLocalita(String idLocalita) throws SQLException
+    {
+        PreparedStatement stmt = null;
+        String query = "SELECT * FROM parametriclimatici "
+                + "WHERE localitaRegistrazione = " + Integer.valueOf(idLocalita) + " "
+                + "ORDER BY dataregistrazione DESC;";
+        stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        return rs;
     }
     
     /**
@@ -200,7 +209,7 @@ public class DatabaseHelper
                             
         pStmt.setInt(1,Integer.parseInt(r.getCentro()));     
         pStmt.setInt(2,r.getArea().intValue());
-        pStmt.setString(3,r.getData()+", "+r.getOra());     
+        pStmt.setString(3,r.getData()+" "+r.getOra());     
         pStmt.setInt(4,r.getValori().get(0));     
         pStmt.setInt(5,r.getValori().get(1));     
         pStmt.setInt(6,r.getValori().get(2));     
