@@ -6,9 +6,12 @@ package ClimateMonitoring;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
@@ -39,40 +42,17 @@ public class NuovaRilevazionePopup extends javax.swing.JFrame {
         
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
-        String[] arrayLocalID=new String[4];
+        
+        ArrayList<String[]> coordinateTemp;
         try {
-            FileReader read = new FileReader("data/CentroMonitoraggio.csv");
-            Scanner input = new Scanner(read);
-            while(input.hasNextLine()) {
-                String line = input.nextLine();
-                String[] parts = line.split("#");
-                    if (parts[0].equals(Utente.getCentro()))
-                        arrayLocalID=parts[6].split("@");
-                }
-        }catch(FileNotFoundException ex){
-            JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il fole contenente i centri di monitoraggio.");
-        }
-        ArrayList<String[]> datiLocalita= new ArrayList<>();
-        try {
-                FileReader read = new FileReader("data/CoordinateMonitoraggio.csv");
-                Scanner input = new Scanner(read);
-                while(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    for(String singoloID: arrayLocalID)
-                        if(parts[0].equals(singoloID))
-                            datiLocalita.add(parts);
-                }
+            coordinateTemp = server.cercaLocalitaAbbinate(Utente.getCentro());
+            for(String[] parti : coordinateTemp)
+            {
+                ddtm.addRow(
+                    new Object[] {parti[1],parti[2],parti[0],Double.valueOf(parti[3]),Double.valueOf(parti[4])});
             }
-        catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il file contenente le stazioni di monitoraggio.");
-        }
-        String[] coordinateTemp;
-        for(String[] parti : datiLocalita)
-        {
-            coordinateTemp=parti[5].split(",");
-            ddtm.addRow(
-                new Object[] {parti[2],parti[4],parti[0],Double.valueOf(coordinateTemp[0]),Double.valueOf(coordinateTemp[1])});
+        } catch (RemoteException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
         }
     }
     
@@ -442,27 +422,30 @@ public class NuovaRilevazionePopup extends javax.swing.JFrame {
     
     private void salvaRilevazioneButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvaRilevazioneButtonActionPerformed
         // TODO add your handling code here:
-        String valoriDati=
-                ventoSlider.getValue()+"@"+
-                umiditaSlider.getValue()+"@"+
-                pressioneSlider.getValue()+"@"+
-                temperaturaSlider.getValue()+"@"+
-                precipitazioniSlider.getValue()+"@"+
-                aGhiacciaiSlider.getValue()+"@"+
-                mGhiacciaiSlider.getValue();
+        ArrayList valori = new ArrayList<Integer>();
+        valori.add(ventoSlider.getValue());
+        valori.add(umiditaSlider.getValue());
+        valori.add(pressioneSlider.getValue());
+        valori.add(temperaturaSlider.getValue());
+        valori.add(precipitazioniSlider.getValue());
+        valori.add(aGhiacciaiSlider.getValue());
+        valori.add(mGhiacciaiSlider.getValue());
         try {
             Rilevazione r =new Rilevazione(
                     Utente.getCentro(),
                     Long.valueOf(tabellaLocalita.getValueAt(tabellaLocalita.getSelectedRow(), 2).toString()),
-                    valoriDati,
+                    valori,
                     jTextPane1.getText().replace("\n", "- ")
             );
-            r.salvaRilevazione();
-            JOptionPane.showMessageDialog(rootPane, "Registrazione salvata con successo.");
-            this.dispose();
-        } catch (rilevazioneException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+            if(server.salvaRilevazione(r))
+            {
+                JOptionPane.showMessageDialog(rootPane, "Registrazione salvata con successo.");
+                this.dispose();
+            }
         }
+        catch (rilevazioneException | RemoteException ex) {
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+            }
         catch(NullPointerException ex){
             JOptionPane.showMessageDialog(rootPane, "Nessuna area selezionata.");
         }

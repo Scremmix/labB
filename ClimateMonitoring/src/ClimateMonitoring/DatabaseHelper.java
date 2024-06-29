@@ -176,6 +176,45 @@ public class DatabaseHelper
         return true;
     }
     
+    public synchronized ResultSet cercaLocalitaAbbinate (String idCentro) throws SQLException
+    {
+        PreparedStatement pStmt;
+        pStmt = connection.prepareStatement("SELECT * FROM centroMonitoraggio WHERE idCentro = "+Integer.valueOf(idCentro)+";");
+        if( !pStmt.executeQuery().isBeforeFirst() ) throw new SQLException("Non esiste nessun centro con questo codice");
+        
+        pStmt = connection.prepareStatement("SELECT idlocalita, nomelocalita, statolocalita, latitudinelocalita, longitudinelocalita "
+                + "FROM abbinamenticentrilocalita JOIN coordinatemonitoraggio ON localitaabbinamento = idlocalita "
+                + "WHERE centroabbinamento = "+Integer.valueOf(idCentro)+";");
+        ResultSet rs = pStmt.executeQuery();
+        if( !rs.isBeforeFirst() ) return null;
+        return rs;
+    }
+    
+    public synchronized boolean salvaRilevazione(Rilevazione r) throws SQLException
+    {
+        PreparedStatement pStmt = connection.prepareStatement("INSERT INTO parametriclimatici "
+                + "(centroRegistrazione, localitaRegistrazione, dataRegistrazione, "
+                + "ventoParametro, umiditaParametro, precatmParametro, tempParametro, "
+                + "precipParametro, altghiParametro, massaghiParametro, noteRegistrazione) "
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+                            
+        pStmt.setInt(1,Integer.parseInt(r.getCentro()));     
+        pStmt.setInt(2,r.getArea().intValue());
+        pStmt.setString(3,r.getData()+", "+r.getOra());     
+        pStmt.setInt(4,r.getValori().get(0));     
+        pStmt.setInt(5,r.getValori().get(1));     
+        pStmt.setInt(6,r.getValori().get(2));     
+        pStmt.setInt(7,r.getValori().get(3));     
+        pStmt.setInt(8,r.getValori().get(4));     
+        pStmt.setInt(9,r.getValori().get(5));     
+        pStmt.setInt(10,r.getValori().get(6));
+        pStmt.setString(11, r.getNota());
+        
+        pStmt.executeUpdate();
+        pStmt.close();
+        return true;
+    }
+    
     /**
      * connessione al database sql con stampa di un messaggio di avvenuta connessione
      * @return

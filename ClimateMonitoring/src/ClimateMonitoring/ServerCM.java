@@ -255,4 +255,39 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
         return result;
     } 
+    
+    public ArrayList<String[]> cercaLocalitaAbbinate (String idCentro) throws RemoteException
+    {
+        ArrayList result = new ArrayList<String[]>();
+        
+        try {
+            ResultSet r = dbh.cercaLocalitaAbbinate(idCentro);
+            while(r.next())
+            {
+                String[] content = new String[5];
+                
+                content[0] = Integer.toString(r.getInt(1));
+                content[1] = r.getString(2);
+                content[2] = r.getString(3);
+                content[3] = Double.toString(r.getDouble(4));
+                content[4] = Double.toString(r.getDouble(5));
+                        
+                result.add(content);
+            }
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public boolean salvaRilevazione(Rilevazione r) throws RemoteException
+    {
+        try {
+            return dbh.salvaRilevazione(r);
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
+        }
+    }
 }

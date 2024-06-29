@@ -4,10 +4,8 @@
  */
 package ClimateMonitoring;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,25 +16,8 @@ import javax.swing.JOptionPane;
  */
 public class RicercaDati extends javax.swing.JFrame {
 
-    private ArrayList<datiStato> mondoNomi=null;
-    private ArrayList<String[]> mondoCoord=null;
+    private ArrayList dati = new ArrayList<String[]>();
     
-    /**
-     * Metodo utile alla ricerca di stati tramite il relativo nome
-     * @param nomeStato nome dello stato in questione
-     * @return l'oggetto datiStato del relativo stato se esistente, null altrimenti
-     */
-    public datiStato cercaStato(String nomeStato)
-    {
-        if(mondoNomi!=null)
-        {
-            for(datiStato stato: mondoNomi)
-                if(stato.daiNomeStato().equals(nomeStato))
-                    return stato;
-            return null;
-        }
-        else{return null;}
-    }
     
     /**
      * Modifica il metodo di ricerca
@@ -46,90 +27,18 @@ public class RicercaDati extends javax.swing.JFrame {
     {
         if(this.modalita!=mod)
         {
-            resetVarFile(this.modalita);
+            dati = new ArrayList<String[]>();
             this.modalita=mod;
             switch(this.modalita)
             {
                 case 1 -> {
                     Campo1.setText("Nome località (inglese)");
                     Campo2.setText("Nome Stato (inglese)");
-                    caricaPerNomi();
                 }
                 case 2 -> {
                     Campo1.setText("Latitudine (N/S)");
                     Campo2.setText("Longitudine (E/O)");
-                    caricaPerCoord();
                 }
-            }
-        }
-    }
-
-    /**
-     * Caricamento su variabile del file relativo alle località di monitoraggio
-     * pronto per la ricerca per nome/Stato
-     */
-    public void caricaPerNomi()
-    {
-        mondoNomi=new ArrayList<>();
-        try {
-                FileReader read = new FileReader("data/CoordinateMonitoraggio.csv");
-                Scanner input = new Scanner(read);
-                datiStato temp=null;
-                while(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    temp=cercaStato(parts[4]);
-                    if(temp==null)
-                    {
-                        temp=new datiStato(parts[4]);
-                        mondoNomi.add(temp);
-                    }
-                    try{
-                        temp.inserireLocalita(parts);
-                    } catch (datiStatoException ex) {
-                        JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile caricare la riga con ID: "+parts[0]+".");
-                    }
-                }
-            }
-        catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il file contenente le stazioni di monitoraggio.");
-        }
-    }
-
-    /**
-     * Caricamento su variabile del file relativo alle località di monitoraggio
-     * pronto per la ricerca per coordinate
-     */
-    public void caricaPerCoord()
-    {
-        mondoCoord=new ArrayList<>();
-        try {
-                FileReader read = new FileReader("data/CoordinateMonitoraggio.csv");
-                Scanner input = new Scanner(read);
-                while(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    String[] parts = line.split("#");
-                    mondoCoord.add(parts);
-                }
-            }
-        catch(FileNotFoundException ex){
-                JOptionPane.showMessageDialog(rootPane, "Errore critico: impossibile trovare il file contenente le stazioni di monitoraggio.");
-        }
-    }
-    
-    /**
-     * Resetta le variabili contenenti la copia del file delle località
-     * @param tipo 1: resetta nome/Stato, 2: resetta coordinate
-     */
-    public void resetVarFile(int tipo)
-    {
-        switch(tipo)
-        {
-            case 1 -> {
-                mondoNomi=null;
-            }
-            case 2 -> {
-                mondoCoord=null;
             }
         }
     }
@@ -329,41 +238,22 @@ public class RicercaDati extends javax.swing.JFrame {
             switch(modalita)
             {
                 case 1 -> {
-                    datiStato statoDiRicerca=cercaStato(Valore2.getText());
-                    if(statoDiRicerca==null)
-                        JOptionPane.showMessageDialog(rootPane, "Stato non trovato");
-                    else
-                    {
-                        ArrayList<String[]> elencoLocalita=statoDiRicerca.cerca(Valore1.getText());
-                        if(elencoLocalita==null)
-                            JOptionPane.showMessageDialog(rootPane, "Combinazione località-Stato non trovata.");
-                        else
-                            mostraInTabella(elencoLocalita);
-                    }
+                    try {
+                        dati = server.cercaLocalita(Valore1.getText(), Valore2.getText());
+                    } 
+                    catch (RemoteException ex) { JOptionPane.showMessageDialog(rootPane, ex.getMessage()); }
                 }
                 case 2 -> {
-                    ArrayList<String[]> elencoLocalita=new ArrayList<>();
-                    try{for(String[] riga: mondoCoord)
+                    try
                     {
-                        String[] coordString=riga[5].split(", ");
-                        Double[] coordDouble={Double.valueOf(coordString[0]),Double.valueOf(coordString[1])};
-                        Double[] coordInsDouble={Double.valueOf(Valore1.getText().replace(",", ".")),Double.valueOf(Valore2.getText().replace(",", "."))};
-                        if(
-                                (coordDouble[0]-coordInsDouble[0])<=0.4 && (coordDouble[0]-coordInsDouble[0])>=-0.4
-                                &&
-                                (coordDouble[1]-coordInsDouble[1])<=0.4 && (coordDouble[1]-coordInsDouble[1])>=-0.4
-                          )
-                            elencoLocalita.add(riga);
+                        dati = server.cercaLocalitaCoordinate(Valore1.getText(), Valore2.getText());
                     }
-                    if(elencoLocalita.isEmpty())
-                        JOptionPane.showMessageDialog(rootPane, "Nessuna località trovata nelle vicinanze.");
-                    else
-                        mostraInTabella(elencoLocalita);
-                    }catch(NumberFormatException e)
-                    {JOptionPane.showMessageDialog(rootPane, "Formato coordinate invalido, usa ',' o '.' per separare.");}
+                    catch(NumberFormatException e) { JOptionPane.showMessageDialog(rootPane, "Formato coordinate invalido, usa ',' o '.' per separare."); }
+                    catch (RemoteException ex) { JOptionPane.showMessageDialog(rootPane, ex.getMessage()); }
                 }
             }
         }
+        mostraInTabella(dati);
     }//GEN-LAST:event_cercaLocalitaButtonActionPerformed
 
     /**
@@ -373,12 +263,10 @@ public class RicercaDati extends javax.swing.JFrame {
     public void mostraInTabella(ArrayList<String[]> righe)
     {
         ddtm.setRowCount(0);
-        String[] coordinateTemp;
         for(String[] parti : righe)
         {
-            coordinateTemp=parti[5].split(",");
             ddtm.addRow
-                (new Object[] {parti[2],parti[4],Long.valueOf(parti[0]),Double.valueOf(coordinateTemp[0]),Double.valueOf(coordinateTemp[1])});
+                (new Object[] {parti[1],parti[2],Long.valueOf(parti[0]),Double.valueOf(parti[3]),Double.valueOf(parti[4])});
         }
     }
     private void dataToDisplayTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataToDisplayTableMouseClicked
@@ -417,10 +305,12 @@ public class RicercaDati extends javax.swing.JFrame {
         false, false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }};
