@@ -6,13 +6,9 @@ package ClimateMonitoring;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -59,7 +55,7 @@ public class Utente {
                     return true;
                 }
             } catch (RemoteException ex) {
-                ex.printStackTrace();
+                throw new utenteException(ex.getLocalizedMessage());
             }
             return false;
         }else return true;

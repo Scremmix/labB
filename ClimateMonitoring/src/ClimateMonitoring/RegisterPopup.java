@@ -5,7 +5,6 @@
 package ClimateMonitoring;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import static java.lang.Math.min;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;

@@ -307,8 +307,8 @@ public class ClientCM extends javax.swing.JFrame {
             return true;
         } 
         catch (NotBoundException | RemoteException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(rootPane, "Impossibile connettersi al server all'IP "+ip);
+            JOptionPane.showMessageDialog(rootPane, "Impossibile connettersi al server all'IP "+ip+"\n"
+                    + "Causa: " +ex.getLocalizedMessage());
             return false;
         }
     }

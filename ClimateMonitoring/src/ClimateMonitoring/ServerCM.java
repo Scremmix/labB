@@ -34,34 +34,38 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
      * qui viene inoltre creato un registro sulla porta 3003 su cui viene fatto bind e rebind 
      * del server e esplicitato a video lo stato del server e del database
      * @param args [0]:databaseurl | [1]: databaseusername | [2]: password | [3]: "y" per reset database se desiderato
+     * @throws RemoteException in caso di errori nella registrazione sul Registry
      */
-    public static void main(String args[])
+    public static void main(String args[]) throws RemoteException
     {
-        boolean reset = false;
-        String [] input = args;
-        if(input.length < 3)
-        {
-            input = richiediParametri();
-        }
-        dbh = new DatabaseHelper(input[0],input[1],input[2]);
-        reset = input[3].equalsIgnoreCase("y");
-        
-        if(dbh.getConnection())
-            try {
+        try {
+            boolean reset = false;
+            String [] input = args;
+            if(input.length < 3)
+            {
+                input = richiediParametri();
+            }
+            dbh = new DatabaseHelper(input[0],input[1],input[2]);
+            reset = input[3].equalsIgnoreCase("y");
+            
+            if(dbh.getConnection())
+            {
                 if(reset) dbh.databaseInit();
-                
-                System.out.println("ServerCM : Database pronto.");
-                
-                Registry r = LocateRegistry.createRegistry(3003);
-                r.rebind("ServerCM", new ServerCM());
-                System.out.println("ServerCM : pronto per ricevere richieste.");
-                
-            } catch (RemoteException ex) 
-            {ex.printStackTrace();}
-        else{
-            System.err.println("Sono richiesti i seguenti parametri: ");
-            System.err.println("[url del database] [username] [password]");
-            System.err.println("Esempio di utilizzo: localhost/postgres admin password123");
+                {
+                    System.out.println("ServerCM : Database pronto.");
+                    
+                    Registry r = LocateRegistry.createRegistry(3003);
+                    r.rebind("ServerCM", new ServerCM());
+                    System.out.println("ServerCM : pronto per ricevere richieste.");
+                }
+            }
+            else{
+                System.err.println("Sono richiesti i seguenti parametri: ");
+                System.err.println("[url del database] [username] [password]");
+                System.err.println("Esempio di utilizzo: localhost/postgres admin password123");
+            }
+        } catch (SQLException ex) {
+            throw new RemoteException(ex.getLocalizedMessage());
         }
     }
     
@@ -100,7 +104,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
      * @param idUtente id dell'utente che desidera di effettuare il login
      * @param password password dell'utente di cui viene controllata l'esistenza
      * @return dati relativi all'utente richiesto qualora esista, null altrimenti
-     * @throws RemoteException
+     * @throws RemoteException da eventuali errori nella procedura
      */
     @Override
     public ArrayList<String> effettuaLogin(String idUtente, String password) throws RemoteException{
@@ -126,8 +130,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
             rs.close();
             return null;
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
+            throw new RemoteException(ex.getLocalizedMessage());
         }
     }
 

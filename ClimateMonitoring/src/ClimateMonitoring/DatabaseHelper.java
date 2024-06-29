@@ -217,35 +217,30 @@ public class DatabaseHelper
     
     /**
      * connessione al database sql con stampa di un messaggio di avvenuta connessione
-     * @return
+     * @return true se la connessione al db viene effettuata con successo, false altrimenti
+     * @throws SQLException in caso di errori con la connessione al db
      */
-    public synchronized boolean getConnection()
+    public synchronized boolean getConnection() throws SQLException
     {
-        try{
-            connection = DriverManager.getConnection("jdbc:postgresql://"+url,user,password);
-            if(connection!=null)
-            {
-                System.out.println("Connessione al database PostgreSQL effettuata con successo.");
-                return true;
-            }
-            else
-            {
-                System.err.println("Connessione al database PostgreSQL fallita.");
-                return false;
-            }
-        }
-        catch(SQLException e)
+        connection = DriverManager.getConnection("jdbc:postgresql://"+url,user,password);
+        if(connection!=null)
         {
-            e.printStackTrace();
+            System.out.println("Connessione al database PostgreSQL effettuata con successo.");
+            return true;
+        }
+        else
+        {
+            System.err.println("Connessione al database PostgreSQL fallita.");
             return false;
         }
     }
     
     /**
      * qui viene reinizzializzato il database e sostituito con le componenti di interesse
-     * @return
+     * @return true se l'operazione ha avuto successo
+     * @throws SQLException in caso di errori con il db
      */
-    public synchronized boolean databaseInit()
+    public synchronized boolean databaseInit() throws SQLException
     {
         System.out.println("Reinizializzazione del database in corso...");
         try{
@@ -329,16 +324,16 @@ public class DatabaseHelper
             return true;
         } catch (SQLException ex) {
             System.err.println("Errore imprevisto nella connessione al database");
-            ex.printStackTrace();
-            return false;
+            throw ex;
         }
     }
     
     /**
      * popolazione del database tramite inserimento dei dati forniti
-     * @return
+     * @return true se l'operazione ha avuto successo
+     * @throws SQLException in caso di errori con il db
      */
-    private synchronized boolean popolaDatabase()
+    private synchronized boolean popolaDatabase() throws SQLException
     {
         try {
             PreparedStatement pStmt = connection.prepareStatement("INSERT INTO CentroMonitoraggio "
@@ -478,14 +473,12 @@ public class DatabaseHelper
             return true;
         } catch (SQLException ex) {
             System.err.println("Errore imprevisto nella connessione al database");
-            ex.printStackTrace();
-            return false;
+            throw ex;
         } catch (FileNotFoundException ex) {
             System.err.println("File csv non trovato.");
-            ex.printStackTrace();
             return false;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            System.err.println("Errore con la gestione file.");
             return false;
         }
     }
