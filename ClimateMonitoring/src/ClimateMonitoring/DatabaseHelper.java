@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Ottengo la connesione a postgres e stampo se sono riuscito a connettermi o no.
- * per l'inizializzazione del database vengono scritte tutte le query e vengono create,
- * dopo viene popolato il database, che legge da file i contenuti e li traduce 
- * nei risultati di ogni tabella.
+ * Permette di: effettuare la connesione a Postgres e di stamparne a video l'esito;
+ * eseguire query, insert e reinizializzazioni specifiche su database Postgres
  * 
- * @author alesc
+ * @author Scremin Alessandro
  */
 public class DatabaseHelper 
 {
@@ -108,9 +106,9 @@ public class DatabaseHelper
     }
     
     /**
-     * l'inserimento di un nuovo c'entro subisce fondamentali controlli che hanno la funzione
-     * di abbinare i centri di registrazione con i luoghi in cui si possono svolgere le 
-     * registrazioni in questione. viene ritornato vero se l'operazione è andata a buon fine
+     * Durante l'nserimento di un nuovo centro vengono effettuati
+     * fondamentali controlli, per poi abbinare i centri di registrazione 
+     * con i luoghi in cui si possono svolgere le registrazioni in questione 
      * @param idCentro
      * @param nomeCentro
      * @param indirizzoCentro
@@ -118,7 +116,7 @@ public class DatabaseHelper
      * @param cittaCentro
      * @param statoCentro
      * @param localitaAbbinate
-     * @return
+     * @return true se l'operazione è andata a buon fine
      * @throws SQLException
      */
     public synchronized boolean inserisciNuovoCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
@@ -225,7 +223,7 @@ public class DatabaseHelper
     }
     
     /**
-     * connessione al database sql con stampa di un messaggio di avvenuta connessione
+     * Connessione al database PostgreSQL con stampa di un messaggio di avvenuta connessione
      * @return true se la connessione al db viene effettuata con successo, false altrimenti
      * @throws SQLException in caso di errori con la connessione al db
      */
@@ -245,7 +243,8 @@ public class DatabaseHelper
     }
     
     /**
-     * qui viene reinizzializzato il database e sostituito con le componenti di interesse
+     * Reinizzializzato il database: viene eseguito il DROP delle 
+     * tabelle su cui lavora il sistema, per poi reistanziarle e ripopolarle
      * @return true se l'operazione ha avuto successo
      * @throws SQLException in caso di errori con il db
      */
@@ -338,7 +337,7 @@ public class DatabaseHelper
     }
     
     /**
-     * popolazione del database tramite inserimento dei dati forniti
+     * Popolazione del database tramite inserimento dei dati forniti dai file csv
      * @return true se l'operazione ha avuto successo
      * @throws SQLException in caso di errori con il db
      */

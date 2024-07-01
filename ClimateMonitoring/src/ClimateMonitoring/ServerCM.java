@@ -27,10 +27,10 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     // localhost/postgres ClimateMonitoring DatabaseCM 
     
     /**
-     * qui può avvenire un possibile reset che serve per reinizializzare il server
-     * questo avviene solamente se viene passata una "y" in input a tale richiesta.
-     * qui viene inoltre creato un registro sulla porta 3003 su cui viene fatto bind e rebind 
-     * del server e esplicitato a video lo stato del server e del database
+     * Vengono richiesti i parametri necessari alla connessione al db e se si desidera
+     * effettuarne il reset: questo avviene solamente se viene passata una "y" in input a tale richiesta.
+     * Inoltre viene creato un Registry sulla porta 3003 su cui viene fatto bind e rebind 
+     * dell'istanza del server ed esplicitato a video lo stato del server e del database
      * @param args [0]:databaseurl | [1]: databaseusername | [2]: password | [3]: "y" per reset database se desiderato
      * @throws RemoteException in caso di errori nella registrazione sul Registry
      */
@@ -141,7 +141,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
      * @param idUtente
      * @param password
      * @param idCentro
-     * @return
+     * @return true in caso di successo
      * @throws RemoteException
      */
     @Override
