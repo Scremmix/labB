@@ -100,7 +100,7 @@ public class DatabaseHelper
         PreparedStatement stmt = null;
         String query = "SELECT * FROM parametriclimatici "
                 + "WHERE localitaRegistrazione = " + Integer.valueOf(idLocalita) + " "
-                + "ORDER BY dataregistrazione DESC;";
+                + "ORDER BY idRegistrazione DESC;";
         stmt = connection.prepareStatement(query);
         ResultSet rs = stmt.executeQuery();
         if( !rs.isBeforeFirst() ) return null;
