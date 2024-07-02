@@ -23,8 +23,6 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     {
         super();
     }
-    // esempio di parametri:
-    // localhost/postgres ClimateMonitoring DatabaseCM 
     
     /**
      * Vengono richiesti i parametri necessari alla connessione al db e se si desidera
@@ -167,7 +165,7 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
     public boolean cambiaCentroUtente(String idUtente, String idCentro) throws RemoteException
     {
         try {
-            return dbh.cambiaCentrtoUtente(idUtente, idCentro);
+            return dbh.cambiaCentroUtente(idUtente, idCentro);
         } catch (SQLException ex) {
             throw new RemoteException(ex.getLocalizedMessage());
         }

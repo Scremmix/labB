@@ -4,7 +4,10 @@
  */
 package ClimateMonitoring;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +47,11 @@ public class ServerCMTest {
     public void testMain() {
         System.out.println("main");
         String[] args = null;
-        ServerCM.main(args);
+        try {
+            ServerCM.main(args);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerCMTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

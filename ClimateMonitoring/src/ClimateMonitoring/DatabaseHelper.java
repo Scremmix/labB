@@ -114,7 +114,7 @@ public class DatabaseHelper
      * @return
      * @throws SQLException
      */
-    public synchronized boolean cambiaCentrtoUtente(String idUtente, String idCentro) throws SQLException
+    public synchronized boolean cambiaCentroUtente(String idUtente, String idCentro) throws SQLException
     {
         PreparedStatement pStmt;
         pStmt = connection.prepareStatement("SELECT * FROM centroMonitoraggio WHERE idCentro = "+Integer.valueOf(idCentro)+";");
