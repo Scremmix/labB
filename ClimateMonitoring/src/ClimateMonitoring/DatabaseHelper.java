@@ -31,6 +31,13 @@ public class DatabaseHelper
         this.password=password;
     }
     
+    /**
+     * Query utile a ritornare i dati relativi ad un utente sulla base del suo id,
+     * passato in input
+     * @param idUtente id dell'utente
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet getUtente(String idUtente) throws SQLException
     {
         PreparedStatement stmt = null;
@@ -42,6 +49,14 @@ public class DatabaseHelper
         return rs;
     }
     
+    /**
+     * Query utile alla ricerca di una località sulla base del nome della stessa 
+     * e sullo stato in cui si trova
+     * @param nome del luogo
+     * @param stato in cui si trova
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet cercaLocalita(String nome, String stato) throws SQLException
     {
         PreparedStatement stmt = null;
@@ -54,6 +69,13 @@ public class DatabaseHelper
         return rs;
     }
     
+    /**
+     * Query uutile alla ricerca di una località sulla base delle sue coordinate.
+     * @param latitudine
+     * @param longitudine
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet cercaLocalitaCoordinate(String latitudine, String longitudine) throws SQLException
     {
         PreparedStatement stmt = null;
@@ -67,6 +89,14 @@ public class DatabaseHelper
         return rs;
     }
     
+    /**
+     * filtro per la ricerca del nome di un centro, (l'inserimento di una lettera
+     * nella barra di ricerca rende visibili i nomi di centri di monitoraggio che 
+     * la contengono)
+     * @param criterio
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet cercaCentri(String criterio) throws SQLException
     {
         PreparedStatement stmt = null;
@@ -77,6 +107,13 @@ public class DatabaseHelper
         return rs;
     }
     
+    /**
+     * Viene cambiato il centro di monitoraggio relativo ad un id utente passato in input
+     * @param idUtente in analisi
+     * @param idCentro nuovo
+     * @return
+     * @throws SQLException
+     */
     public synchronized boolean cambiaCentrtoUtente(String idUtente, String idCentro) throws SQLException
     {
         PreparedStatement pStmt;
@@ -93,6 +130,13 @@ public class DatabaseHelper
         return true;
     }
     
+    /**
+     * Utile ad ottenere la query delle rilevazioni relative ad una località sulla 
+     * base del suo id
+     * @param idLocalita
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet getRilevazioniLocalita(String idLocalita) throws SQLException
     {
         PreparedStatement stmt = null;
@@ -153,6 +197,19 @@ public class DatabaseHelper
         return true;
     }
     
+    /**
+     * Utile all'inserimento di un nuovo utente nel database sulla base dei seguenti
+     * dati:
+     * @param nome
+     * @param cognome
+     * @param codiceFiscale
+     * @param email
+     * @param idUtente
+     * @param password
+     * @param idCentro
+     * @return
+     * @throws SQLException
+     */
     public synchronized boolean inserisciNuovoUtente(String nome, String cognome, String codiceFiscale, 
             String email, String idUtente, String password, String idCentro) throws SQLException
     {
@@ -183,6 +240,12 @@ public class DatabaseHelper
         return true;
     }
     
+    /**
+     * Dall'ID del centro ricava i dati di tutte le località ad esso abbinate
+     * @param idCentro in input
+     * @return
+     * @throws SQLException
+     */
     public synchronized ResultSet cercaLocalitaAbbinate (String idCentro) throws SQLException
     {
         PreparedStatement pStmt;
@@ -197,6 +260,12 @@ public class DatabaseHelper
         return rs;
     }
     
+    /**
+     * salvataggio di una rilevazione, ovvero inserimenoto nel databse
+     * @param r contiene i dati relativi alla rilevazione
+     * @return
+     * @throws SQLException
+     */
     public synchronized boolean salvaRilevazione(Rilevazione r) throws SQLException
     {
         PreparedStatement pStmt = connection.prepareStatement("INSERT INTO parametriclimatici "

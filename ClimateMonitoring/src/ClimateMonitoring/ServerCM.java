@@ -154,6 +154,15 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    /**
+     * Override del metodo in DatabaseHelper utile a cambiare il centro di monitoraggio relativo
+     * add un id utente, con l'aggiunta del lancio di una RemoteException in caso di rilevazione 
+     * di SQLException
+     * @param idUtente
+     * @param idCentro
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean cambiaCentroUtente(String idUtente, String idCentro) throws RemoteException
     {
@@ -164,6 +173,12 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    /**
+     * Serve per cercare le rilevazioni relative ad una località tramite il suo id
+     * @param idLocalita in questione
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Rilevazione> cercaRilevazioneLocalita (String idLocalita) throws RemoteException
     {
@@ -225,6 +240,20 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return result;
     }
     
+    /**
+     * Override del metodo presente in DatabaseHelper utile al salvataggio di un
+     * centro nel database con il controllo di SQLException e il possibile lancio
+     * di RemoteException
+     * @param idCentro
+     * @param nomeCentro
+     * @param indirizzoCentro
+     * @param capCentro
+     * @param cittaCentro
+     * @param statoCentro
+     * @param localitaAbbinate
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean salvaCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
             String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws RemoteException
@@ -236,6 +265,14 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         }
     }
     
+    /**
+     * Override del metodo presente in DatabaseHelper utile alla ricerca di una
+     * località sulla base del suo nome e della località in cui si trova
+     * @param criterioNome
+     * @param criterioStato
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String[]> cercaLocalita (String criterioNome, String criterioStato) throws RemoteException
     {
@@ -261,6 +298,15 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return result;
     }
     
+    /**
+     * Override del metodo presente in DatabaseHelper utile alla ricerca di una 
+     * località per coordinate con il controllo di SQLException e il possibile lancio
+     * di RemoteException
+     * @param latitudine
+     * @param logitudine
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String[]> cercaLocalitaCoordinate (String latitudine, String logitudine) throws RemoteException
     {
@@ -286,6 +332,13 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return result;
     } 
     
+    /**
+     * Override del metodo presente in DatabaseHelper che dall'ID del centro ricava 
+     * i dati di tutte le località ad esso abbinate
+     * @param idCentro
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<String[]> cercaLocalitaAbbinate (String idCentro) throws RemoteException
     {
@@ -312,6 +365,13 @@ public class ServerCM extends UnicastRemoteObject implements ServerCMInterface
         return result;
     }
     
+    /**
+     * Override del metodo presente in DatabaseHelper utile al salvataggio di una
+     * rilevazione nel database
+     * @param r contiene i dati relativi alla rilevazione in questione
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean salvaRilevazione(Rilevazione r) throws RemoteException
     {
