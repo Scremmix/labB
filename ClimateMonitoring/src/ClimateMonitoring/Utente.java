@@ -47,7 +47,9 @@ public class Utente {
             ArrayList rigaUtente;
             try {
                 rigaUtente = server.effettuaLogin(idUtente, password);
-                if(rigaUtente != null){
+                if(rigaUtente == null)
+                    return false;
+                if(rigaUtente.get(0).equals(idUtente) && rigaUtente.get(1).equals(password)){  
                     Utente.nomeUtente=idUtente;
                     Utente.password=password;
                     Utente.nome=rigaUtente.get(2).toString();
