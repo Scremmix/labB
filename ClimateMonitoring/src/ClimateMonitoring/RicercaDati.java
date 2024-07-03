@@ -45,6 +45,7 @@ public class RicercaDati extends javax.swing.JFrame {
 
     /**
      * Costruttore di default
+     * @param server su cui effettuare le query
      */
     public RicercaDati(ServerCMInterface server) {
         initComponents();
@@ -60,11 +61,12 @@ public class RicercaDati extends javax.swing.JFrame {
     private ServerCMInterface server;
     
     /**
-     * Metodo utile a richiamare la modalità di ricerca attualmente attiva
+     * Metodo utile a ottenere la modalità di ricerca attualmente attiva
      * @return modalità attiva
      */
     public int modalitaAttiva()
     {return this.modalita;}
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -204,8 +206,8 @@ public class RicercaDati extends javax.swing.JFrame {
     }//GEN-LAST:event_Valore1ActionPerformed
 
     /**
-     * Se i parametri sono validi, effettua la ricerca in base alla modalità
-     * attiva e ne mostra i dati in tabella
+     * Se i parametri sono validi, effettua la ricerca delle località secondo
+     * la modalità attiva e ne mostra i dati in tabella
      * @param evt 
      */
     private void cercaLocalitaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cercaLocalitaButtonActionPerformed

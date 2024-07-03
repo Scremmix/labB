@@ -33,10 +33,10 @@ public class DatabaseHelper
     
     /**
      * Query utile a ritornare i dati relativi ad un utente sulla base del suo id,
-     * passato in input
+     * passato in input.
      * @param idUtente id dell'utente
-     * @return
-     * @throws SQLException
+     * @return ResultSet risultato della query
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized ResultSet getUtente(String idUtente) throws SQLException
     {
@@ -51,11 +51,11 @@ public class DatabaseHelper
     
     /**
      * Query utile alla ricerca di una località sulla base del nome della stessa 
-     * e sullo stato in cui si trova
-     * @param nome del luogo
+     * e dello stato in cui si trova
+     * @param nome porzione del nome della località
      * @param stato in cui si trova
-     * @return
-     * @throws SQLException
+     * @return ResultSet righe contenenti le località che rispecchiano il criterio
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized ResultSet cercaLocalita(String nome, String stato) throws SQLException
     {
@@ -70,11 +70,12 @@ public class DatabaseHelper
     }
     
     /**
-     * Query uutile alla ricerca di una località sulla base delle sue coordinate.
+     * Query utile alla ricerca delle località nel raggio di +/- 0.5 dalle coordinate
+     * passate come parametro
      * @param latitudine
      * @param longitudine
-     * @return
-     * @throws SQLException
+     * @return ResultSet contenente le località che rispettano il criterio sopra citato
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized ResultSet cercaLocalitaCoordinate(String latitudine, String longitudine) throws SQLException
     {
@@ -90,12 +91,10 @@ public class DatabaseHelper
     }
     
     /**
-     * filtro per la ricerca del nome di un centro, (l'inserimento di una lettera
-     * nella barra di ricerca rende visibili i nomi di centri di monitoraggio che 
-     * la contengono)
-     * @param criterio
-     * @return
-     * @throws SQLException
+     * Query utile alla ricerca di centri in base ad una porzione del relativo nome
+     * @param criterio porzione del nome dei centri
+     * @return ResultSet centri che rispecchiano il criterio
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized ResultSet cercaCentri(String criterio) throws SQLException
     {
@@ -111,8 +110,8 @@ public class DatabaseHelper
      * Viene cambiato il centro di monitoraggio relativo ad un id utente passato in input
      * @param idUtente in analisi
      * @param idCentro nuovo
-     * @return
-     * @throws SQLException
+     * @return true in caso di successo
+     * @throws SQLException in caso di errori con il db o in cui l'ID del centro o dell'operatore non esistano
      */
     public synchronized boolean cambiaCentroUtente(String idUtente, String idCentro) throws SQLException
     {
@@ -131,11 +130,11 @@ public class DatabaseHelper
     }
     
     /**
-     * Utile ad ottenere la query delle rilevazioni relative ad una località sulla 
-     * base del suo id
-     * @param idLocalita
-     * @return
-     * @throws SQLException
+     * Utile ad ottenere le rilevazioni relative ad una località sulla 
+     * base del suo ID
+     * @param idLocalita ID della località di interesse
+     * @return ResultSet rilevazioni presenti su db
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized ResultSet getRilevazioniLocalita(String idLocalita) throws SQLException
     {
@@ -161,7 +160,7 @@ public class DatabaseHelper
      * @param statoCentro
      * @param localitaAbbinate
      * @return true se l'operazione è andata a buon fine
-     * @throws SQLException
+     * @throws SQLException in caso di errori con il db o in cui l'ID del centro sia già in uso
      */
     public synchronized boolean inserisciNuovoCentro(String idCentro, String nomeCentro, String indirizzoCentro, 
             String capCentro, String cittaCentro, String statoCentro, ArrayList<String> localitaAbbinate) throws SQLException
@@ -199,7 +198,7 @@ public class DatabaseHelper
     
     /**
      * Utile all'inserimento di un nuovo utente nel database sulla base dei seguenti
-     * dati:
+     * dati
      * @param nome
      * @param cognome
      * @param codiceFiscale
@@ -207,8 +206,9 @@ public class DatabaseHelper
      * @param idUtente
      * @param password
      * @param idCentro
-     * @return
-     * @throws SQLException
+     * @return true se l'operazione ha avuto successo
+     * @throws SQLException in casi di errori con il db o in cui l'ID operatore, la mail o il codice fiscale
+     * siano già in uso
      */
     public synchronized boolean inserisciNuovoUtente(String nome, String cognome, String codiceFiscale, 
             String email, String idUtente, String password, String idCentro) throws SQLException
@@ -243,8 +243,8 @@ public class DatabaseHelper
     /**
      * Dall'ID del centro ricava i dati di tutte le località ad esso abbinate
      * @param idCentro in input
-     * @return
-     * @throws SQLException
+     * @return ResultSet località abbinate al centro
+     * @throws SQLException in caso di errori con il db o di centro non esistente
      */
     public synchronized ResultSet cercaLocalitaAbbinate (String idCentro) throws SQLException
     {
@@ -262,9 +262,9 @@ public class DatabaseHelper
     
     /**
      * salvataggio di una rilevazione, ovvero inserimenoto nel databse
-     * @param r contiene i dati relativi alla rilevazione
-     * @return
-     * @throws SQLException
+     * @param r contiene i dati relativi alla rilevazione da salvare
+     * @return true in caso di successo
+     * @throws SQLException in caso di errori con il db
      */
     public synchronized boolean salvaRilevazione(Rilevazione r) throws SQLException
     {

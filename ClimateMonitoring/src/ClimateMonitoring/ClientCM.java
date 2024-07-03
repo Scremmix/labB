@@ -9,12 +9,12 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 import java.rmi.*;
-import java.rmi.server.*;
 import java.rmi.registry.*;
 
 /**
- * Il main di tutto il programma.
+ * Costituisce il client, disponibile all'utilizzo per utenti non registrati ed operatori
  * Permette di eseguire le operazioni utente e operatore
+ * La connessione al server viene effettuata sulla porta 3003
  * @author Scremin Alessandro
  */
 public class ClientCM extends javax.swing.JFrame {
@@ -298,6 +298,11 @@ public class ClientCM extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_serverConnectButtonActionPerformed
 
+    /**
+     * Effettua la connessione al server RMI
+     * @param ip del server
+     * @return true in caso di successo
+     */
     private boolean connectToRemoteServerCM(String ip)
     {
         try {
@@ -321,16 +326,11 @@ public class ClientCM extends javax.swing.JFrame {
                              "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         Pattern pattern = Pattern.compile(ipv4Pattern); 
   
-        // Create a matcher with the input IP address 
         Matcher matcher = pattern.matcher(ip); 
   
-        // Check if the matcher finds a match 
         return matcher.matches(); 
     }
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

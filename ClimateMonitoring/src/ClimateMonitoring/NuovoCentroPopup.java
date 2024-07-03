@@ -19,6 +19,7 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
     
     /**
      * Crea un nuovo form NuovoCentroPopup
+     * @param server su cui effettuare le operazioni
      */
     public NuovoCentroPopup(ServerCMInterface server) {
         initComponents();
@@ -320,7 +321,7 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
     }//GEN-LAST:event_cercaLocalitaButtonActionPerformed
     
     /**
-     * Fa controlli sugli input e salva il nuovo centro su file se ogni input è utilizzabile
+     * Fa controlli sugli input e salva il nuovo centro su database se ogni input è utilizzabile
      * @param evt 
      */
     private void salvaRilevazioneButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvaRilevazioneButtonActionPerformed
@@ -435,10 +436,12 @@ public class NuovoCentroPopup extends javax.swing.JFrame {
         false, false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }

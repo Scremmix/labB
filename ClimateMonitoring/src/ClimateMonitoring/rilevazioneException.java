@@ -5,23 +5,21 @@
 package ClimateMonitoring;
 
 /**
- * Eccezioni causate dagli errori relativi alle
- * nuove rilevazioni da salvare
+ * Eccezioni causate dagli errori relativi alle rilevazioni
  * @author Scremin Alessandro
  */
 public class rilevazioneException extends Exception{
 
     /**
-     * Creates a new instance of <code>rilevazioneException</code> without
-     * detail message.
+     * Crea una nuova istanza di <code>rilevazioneException</code> senza messaggio.
      */
     public rilevazioneException() {}
 
     /**
-     * Constructs an instance of <code>rilevazioneException</code> with the
-     * specified detail message.
+     * Crea una nuova istanza di <code>rilevazioneException</code> 
+     * con un messaggio di dettaglio
      *
-     * @param msg the detail message.
+     * @param msg messaggio di dettaglio.
      */
     public rilevazioneException(String msg) {
         super(msg);

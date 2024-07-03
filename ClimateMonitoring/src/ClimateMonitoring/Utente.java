@@ -33,11 +33,12 @@ public class Utente {
     }
     
     /**
-     * Il metodo richiede all'utente i dati utili al login 
+     * Il metodo richiede all'utente i dati utili al login
+     * @param server su cui effettuare il login
      * @param idUtente ID dell'utente da loggare
      * @param password password dell'utente da loggare
-     * @return true in caso di successo, false altrimenti
-     * @throws utenteException errori in caso di apertura file
+     * @return true in caso di successo
+     * @throws utenteException errori ottenuti dal server
      */
     public static boolean login(ServerCMInterface server, String idUtente, String password) throws utenteException
     {
@@ -73,14 +74,14 @@ public class Utente {
     
     /**
      * Metodo utile a ottenere i dati anagrafici dell'operatore attuale
-     * @return nome e cognome
+     * @return "[nome] [cognome]"
      */
     public static String getUsername()
     {return Utente.nome+" "+Utente.cognome;}
     
     /**
      * Utile a richiamare il centro di monitoraggio cui è abbinato l'operatore attuale
-     * @return id del centro in questione
+     * @return id del centro
      */
     public static String getCentro()
     {return Utente.idCentro;}
@@ -89,12 +90,13 @@ public class Utente {
      * Utile a impostare il centro di monitoraggio cui è abbinato l'operatore attuale
      * Nota: necessita di una chiamata per modificare a DB il valore
      * 
-     * @param centro: l'ID del nuovo centro
+     * @param centro l'ID del nuovo centro
      */
     public static void setCentro(String centro)
     { Utente.idCentro = centro; }
+    
     /**
-     * Metodo utile a controllare se un operatore è attualmente connesso o meno
+     * Metodo utile a controllare se un operatore è attualmente autenticato o meno
      * @return valore booleano corrispondente
      */
     public static boolean loggato()
@@ -104,6 +106,7 @@ public class Utente {
     
     /**
      * Metodo utile alla registrazione di nuovi utenti
+     * @param server su cui effettuare la registrazione
      * @param nome del nuovo utente
      * @param cognome del nuovo utente
      * @param password1 : primo inserimento di una password
@@ -115,7 +118,7 @@ public class Utente {
      * @param idCentro di interesse, utile a sviluppare rilevazioni mirate
      * @return valore booleano che definisce il successo o il fallimento della 
      * registrazione
-     * @throws utenteException eventuali errori in fase di registrazione
+     * @throws utenteException eventuali errori in fase di registrazione da server
      */
     public static boolean register(ServerCMInterface server, String nome, String cognome, String password1, String password2, 
             String email, String userID, String codiceFiscale, String idCentro) 
@@ -142,8 +145,8 @@ public class Utente {
     /**
      * @deprecated 
      * Metodo utile a verificare se alcuni parametri della registrazione
-     * DEPRECATO n quanto gli errori di idoneità vengono gestiti a livello server
      * sono in uso da un utente già registrato
+     * DEPRECATO in quanto gli errori di idoneità vengono gestiti a livello server
      * @param idUtente del nuovo utente
      * @param codiceFiscale del nuovo utente
      * @param email del nuovo utente

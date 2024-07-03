@@ -5,26 +5,20 @@
 package ClimateMonitoring;
 
 import java.awt.Component;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
 /**
- *
+ * Classe grafica per mostrare le note delle rilevazioni
  * @author Scremin Alessandro
  */
 class WordWrapCellRenderer extends JTextArea implements TableCellRenderer {
 
-    /**
-     *
-     */
     WordWrapCellRenderer() {
         setLineWrap(true);
         setWrapStyleWord(true);
@@ -54,7 +48,7 @@ public class DataDisplay extends javax.swing.JFrame {
     
     /**
      * Imposta la località di cui mostrare i dati nella label grafica
-     * @param localita  località relativa ai dati mostrati
+     * @param localita relativa ai dati mostrati
      */
     public void impostaLocalita(String localita)
     {this.locationSpecifics.setText(localita);}
@@ -106,7 +100,6 @@ public class DataDisplay extends javax.swing.JFrame {
         }
     }
     /**
-     * 
      * Metodo utile al calcolo della media dei valori inseriti
      * @param valori ArrayList contentente i valori da elaborare
      * @return risultato la media in Integer dei valori inseriti
@@ -170,7 +163,7 @@ public class DataDisplay extends javax.swing.JFrame {
     }
     
     /**
-     * Serve per riempire le tabelle con i dati scritti su file
+     * Serve per riempire le tabelle con i dati otttenuti da database
      */
     public void popolaTabelle()
     {
@@ -200,6 +193,7 @@ public class DataDisplay extends javax.swing.JFrame {
     /**
      * Costruttore con parametro
      * @param idArea id relativo alla zona di interesse di cui mostrare i dati
+     * @param server da cui ottenere i dati
      */
     public DataDisplay(Long idArea, ServerCMInterface server) {
         initComponents();
@@ -1086,10 +1080,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, true, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1105,10 +1101,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1124,10 +1122,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1143,10 +1143,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1162,10 +1164,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1181,10 +1185,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }
@@ -1200,10 +1206,12 @@ public class DataDisplay extends javax.swing.JFrame {
         false, false, false, false
     };
 
+    @Override
     public Class getColumnClass(int columnIndex) {
         return types [columnIndex];
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return canEdit [columnIndex];
     }

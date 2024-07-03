@@ -23,6 +23,7 @@ public class NuovaRilevazionePopup extends javax.swing.JFrame {
     
     /**
      * Crea un nuovo form di RilevazionePopup
+     * @param server su cui effettuare le operazioni
      */
     public NuovaRilevazionePopup(ServerCMInterface server) {
         initComponents();
@@ -64,10 +65,12 @@ public class NuovaRilevazionePopup extends javax.swing.JFrame {
             false, false, false, false, false
         };
 
+        @Override
         public Class getColumnClass(int columnIndex) {
             return types [columnIndex];
         }
 
+        @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return canEdit [columnIndex];
         }
@@ -411,10 +414,10 @@ public class NuovaRilevazionePopup extends javax.swing.JFrame {
     }
     
     /**
-     * Effettua e eventualmente conferma il salvataggio su file tramite un messaggio
+     * Effettua e eventualmente conferma il salvataggio su database
+     * della rilevazone tramite un messaggio
      * @param evt 
      */
-    
     private void salvaRilevazioneButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvaRilevazioneButtonActionPerformed
         // TODO add your handling code here:
         ArrayList valori = new ArrayList<Integer>();

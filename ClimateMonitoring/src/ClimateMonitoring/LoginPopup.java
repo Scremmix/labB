@@ -17,6 +17,7 @@ public class LoginPopup extends javax.swing.JFrame {
     
     /**
      * Crea un nuovo LoginPopup
+     * @param server su cui effettuare le operazioni
      */
     public LoginPopup(ServerCMInterface server) {
         initComponents();

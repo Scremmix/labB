@@ -11,17 +11,16 @@ package ClimateMonitoring;
 public class utenteException extends Exception{
 
     /**
-     * Creates a new instance of <code>utenteException</code> without detail
-     * message.
+     * Crea una nuova istanza di <code>utenteException</code> senza messaggio
      */
     public utenteException() {
     }
 
     /**
-     * Constructs an instance of <code>utenteException</code> with the specified
-     * detail message.
+     * Crea una nuova istanza di <code>utenteException</code>
+     * con messaggio di dettagio
      *
-     * @param msg the detail message.
+     * @param msg messaggio di dettaglio.
      */
     public utenteException(String msg) {
         super(msg);

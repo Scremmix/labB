@@ -8,8 +8,9 @@ import java.util.ArrayList;
  */
 
 /**
- *
- * @author alesc
+ * Interfaccia che qualunque server deve implementare, per permettere
+ * ai client di interagire con essi ttramite Java RMI
+ * @author Scremin Alessandro
  */
 public interface ServerCMInterface extends Remote{
     

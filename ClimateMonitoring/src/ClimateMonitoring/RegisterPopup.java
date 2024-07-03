@@ -20,6 +20,7 @@ public class RegisterPopup extends javax.swing.JFrame {
     private ServerCMInterface server=null;
     /**
      * Crea un nuovo form RegisterPopup
+     * @param server su cui effettuare le operazioni
      */
     public RegisterPopup(ServerCMInterface server) {
         initComponents();
@@ -271,8 +272,8 @@ public class RegisterPopup extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     /**
-     * Metodo che mostra in tabella i dati inseriti
-     * @param dati da mostrare
+     * Metodo che mostra in tabella i centri ottenuti dalla ricerca
+     * @param dati dei centri da mostrare
      */
     public void mostraInTabella(ArrayList<String[]> dati)
     {
@@ -285,10 +286,9 @@ public class RegisterPopup extends javax.swing.JFrame {
     }
     
     /**
-     * Ricerca di un centro per nome o per una porzione di nome. 
-     * Ritorna un ArrayList vuoto se non è stato trovato alcun risultato.
-     * @param nomeCentro nome del centro in questione
-     * @return ArrayList contenente le località valide
+     * Effettua una ricerca a database dei centri, attivando eventuale popup per errori
+     * @param nomeCentro porzione del nome dei centri
+     * @return ArrayList contenente i centri validi
      */
     public ArrayList<String[]> cercaCentro(String nomeCentro)
     {
@@ -347,8 +347,8 @@ public class RegisterPopup extends javax.swing.JFrame {
     // TODO add your handling code here:
 
     /**
-     * Fa partire la ricerca per il testo inserito nel TextField
-     * e ne mostra i risultati in tabella
+     * Fa partire la ricerca dei centri per il testo inserito 
+     * nel TextField e ne mostra i risultati in tabella
      * @param evt 
      */
     private void centerSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centerSearchButtonActionPerformed
@@ -363,9 +363,8 @@ public class RegisterPopup extends javax.swing.JFrame {
     }//GEN-LAST:event_centerTableMouseClicked
     
     /**
-     * Metodo utile alla registrazione e alla ricerca di eventuali errori.
-     * Se i parametri inseriti nei vari TextField sono validi, salva
-     * il nuovo utente su file
+     * Metodo utile alla registrazione dell'operatore e alla ricerca di eventuali errori.
+     * Se i parametri inseriti nei vari TextField sono validi, salva il nuovo utente su database tramite server
      * @param evt 
      */
     private void RegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisterButtonActionPerformed
